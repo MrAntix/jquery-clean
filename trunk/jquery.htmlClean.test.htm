@@ -1,0 +1,41 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Clean HTML</title>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="jquery.htmlClean.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#Clean").click(function() {
+                var html = $.htmlClean($("#Input").val(),
+                    {
+                        bodyOnly: $("#BodyOnly").attr("checked"),
+                        removeAttrs: $("#RemoveAttrs").val().split(',')
+                    });
+                    $("#OutputHTML").val(html);
+                    $("#OutputWYSIWYG").html(html);
+                    return false;
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <form>
+        <textarea id="Input" rows="15" cols="100"><H1 class="cock"><P>Test</H1>
+<P>This is <em>a</em> basic<BR>test</p>
+<ul>
+<li>Hi
+<li>Hiya
+</ul></textarea><br />
+        
+        <label>body only<input id="BodyOnly" type="checkbox" checked="checked" /></label><br />
+        <label>remove attrs<input id="RemoveAttrs" value="class" />(comma separated, no spaces)</label><br />
+        
+        <button id="Clean" href="#">Clean</button><br />
+        
+        <textarea id="OutputHTML" rows="15" cols="100"></textarea><br />
+        <div id="OutputWYSIWYG"></div>
+    </form>
+</body>
+</html>
