@@ -22,12 +22,23 @@
 </head>
 <body>
     <form>
-        <textarea id="Input" rows="15" cols="100"><H1 class="cock"><P>Test</H1>
-<P>This is <em>a</em> basic<BR>test</p>
+        <textarea id="Input" rows="15" cols="100"><H1 class="header"><P>Nested P Test</H1>
+<P>This is <em>an inline</em> tag<BR>test</p>
+<p>        Unecessary white space test          </p>
+<p><b>Replace</b> test</p>
 <ul>
-<li>Hi
-<li>Hiya
-</ul></textarea><br />
+<li>Un-closed List Item Test 1
+<li>Un-closed List Item Test 2
+</ul>
+<table>
+    <tr>
+        <th>Un-closed Cell & row Test 1
+        <td>Un-closed Cell & row Test 2
+    <tr>
+        <th>  White space in cell test </th>
+        <td>&nbsp;</td>
+    </tr>
+</table></textarea><br />
         
         <label>body only<input id="BodyOnly" type="checkbox" checked="checked" /></label><br />
         <label>remove attrs<input id="RemoveAttrs" value="class" />(comma separated, no spaces)</label><br />
