@@ -3,16 +3,18 @@
     Copyright (c) 2008 Anthony Johnston
     http://www.antix.co.uk    
     
-    version 0.9.1   
+    version 0.9.2
     
 */
 (function($) {
-    // defaults
-    $.htmlClean.defaults={
-            bodyOnly: true,
-            removeAttrs: ["class"]
-        }
-        
+// TODO
+//    $.fn.htmlClean = function(options) {
+//        // iterate and html clean each matched element
+//        return this.each(function() {
+//            
+//        });
+//    };
+    
     // clean the passed html
     $.htmlClean = function(html, options) {
         options = jQuery.extend($.htmlClean.defaults, options);
@@ -105,6 +107,12 @@
         return render(root).join("");
     }
 
+    // defaults
+    $.htmlClean.defaults = {
+        bodyOnly: true,
+        removeAttrs: ["class"]
+    }
+
     function render(element) {
         var output = [];
         var empty = element.attributes.length == 0;
@@ -165,9 +173,9 @@
                 output.push(element.tag.name);
                 output.push(">");
 
-//                if (!element.tag.isInline) {
-//                    output.push("\n");
-//                }
+                //                if (!element.tag.isInline) {
+                //                    output.push("\n");
+                //                }
             }
         }
 
