@@ -72,9 +72,10 @@
                     // check container rules
                     var add = true;
                     if (!container.isRoot) {
-                        if (container.tag.noNest && tag.noNest) {
+                        if (container.tag.isInline && !tag.isInline) {
                             add = false;
-                        } else if (container.tag.isInline && !tag.isInline) {
+                        } else if (container.tag.disallowNest && tag.disallowNest
+                                && !tag.requiredParent) {
                             add = false;
                         } else if (tag.requiredParent) {
                             if (add = pop(stack, tag.requiredParent)) {
@@ -161,14 +162,14 @@
                 output.push(element.tag.name);
                 output.push(">");
 
-                if (!element.tag.isInline) {
-                    output.push("\n");
-                }
+//                if (!element.tag.isInline) {
+//                    output.push("\n");
+//                }
             }
         }
 
         // check for empty tags
-        if (empty) { return []; }
+        if (!element.tag.allowEmpty && empty) { return []; }
 
         return output;
     }
@@ -220,8 +221,9 @@
         this.isClosing = (close != undefined && close.length > 0);
 
         this.isInline = $.inArray(this.name, tagInline) > -1;
-        this.noNest = $.inArray(this.name, tagNoNest) > -1;
+        this.disallowNest = $.inArray(this.name, tagDisallowNest) > -1;
         this.requiredParent = tagRequiredParent[$.inArray(this.name, tagRequiredParent) + 1];
+        this.allowEmpty = $.inArray(this.name, tagAllowEmpty) > -1;
 
         this.toRemove = $.inArray(this.name, tagRemove) > -1;
 
@@ -234,17 +236,16 @@
     function isInline(item) { return isText(item) || item.tag.isInline; }
     function textClean(text) {
         return text
-            .replace("&nbsp;", " ")
-            .replace("\n", " ")
+            .replace(/&nbsp;|\n/g, " ")
             .replace(/\s\s+/g, " ");
     }
 
 
     // trim of white space, doesn't use regex
     $.htmlClean.trim = function(text) {
-        for (var start = 0; start < text.length && $.htmlClean.isWhitespace(text.charAt(start)); start++);
-        for (var end = text.length - 1; end >= 0 && $.htmlClean.isWhitespace(text.charAt(end)); end--);
-        return text.substr(start, end + 1);
+        for (var start = 0; start < text.length - 1 && $.htmlClean.isWhitespace(text.charAt(start)); start++);
+        for (var end = text.length - 1; end >= start && $.htmlClean.isWhitespace(text.charAt(end)); end--);
+        return text.substring(start, end + 1);
     }
     // checks a char is white space or not
     $.htmlClean.isWhitespace = function(c) { return $.inArray(c, whitespace) != -1; }
@@ -264,7 +265,8 @@
         "hr", "input", "img", "ins", "label", "legend", "map", "q",
         "samp", "select", "small", "span", "strong", "sub", "sup",
         "tt", "var"];
-    var tagNoNest = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "th", "td"];
+    var tagDisallowNest = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "th", "td"];
+    var tagAllowEmpty = ["th", "td"];
     var tagRequiredParent = [
         null,
         "li", ["ul", "ol"],
