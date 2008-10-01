@@ -7,12 +7,15 @@
     
 */
 (function($) {
-    // clean the passed html
-    $.htmlClean = function(html, settings) {
-        settings = jQuery.extend({
+    // defaults
+    $.htmlClean.defaults={
             bodyOnly: true,
             removeAttrs: ["class"]
-        }, settings);
+        }
+        
+    // clean the passed html
+    $.htmlClean = function(html, options) {
+        options = jQuery.extend($.htmlClean.defaults, options);
 
         var tagsRE = /<(\/)?(\w+:)?([\w]+)([^>]*)>/gi;
         var attrsRE = /(\w+)=(".*"|'.*'|[^\s>]*)/gi;
@@ -22,7 +25,7 @@
         var stack = [root];
         var container = root;
 
-        if (settings.bodyOnly) {
+        if (options.bodyOnly) {
             // check for body tag
             if (tagMatch = /<body[^>]*>((\n|.)*)<\/body>/i.exec(html)) {
                 html = tagMatch[1];
@@ -63,7 +66,7 @@
                         while (attrMatch = attrsRE.exec(tagMatch[4])) {
                             if ((tag.attributes.length == 0
                                 || $.inArray(attrMatch[1], tag.attributes) > -1)
-                                && $.inArray(attrMatch[1], settings.removeAttrs) == -1) {
+                                && $.inArray(attrMatch[1], options.removeAttrs) == -1) {
                                 element.attributes.push(new Attribute(attrMatch[1], attrMatch[2]));
                             }
                         }
