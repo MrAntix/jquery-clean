@@ -146,14 +146,12 @@
                 var child = element.children[i];
                 if (isText(child)) {
                     var text = "";
-                    if (i != 0
-                            && isInline(element.children[i - 1])
+                    if ((i == 0 ? isInline(element) : isInline(element.children[i - 1]))
                             && $.htmlClean.isWhitespace(child.charAt(0))) {
                         text = text.concat(" ");
                     }
                     text = text.concat($.htmlClean.trim(child));
-                    if (i != element.children.length - 1
-                            && isInline(element.children[i + 1])
+                    if ((i == element.children.length - 1 ? isInline(element) : isInline(element.children[i + 1]))
                             && $.htmlClean.isWhitespace(child.charAt(child.length - 1))) {
                         text = text.concat(" ");
                     }
