@@ -156,7 +156,8 @@
                         text = text.concat(" ");
                     }
                     if (text.length > 0) { outputChildren.push(text); }
-                } else {
+                    // don't allow a break to be the last child
+                } else if (i != element.children.length - 1 || child.tag.name!="br") {
                     outputChildren = outputChildren.concat(render(child));
                 }
             }
