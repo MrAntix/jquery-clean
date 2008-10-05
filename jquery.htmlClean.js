@@ -1,20 +1,26 @@
 /*
     HTML Clean for $   
-    Copyright (c) 2008 Anthony Johnston
+    Anthony Johnston
     http://www.antix.co.uk    
     
-    version 0.9.2
-    
+    version 0.9.3
+
+    Use and distibution http://www.gnu.org/licenses/gpl.html
+    requires jQuery http://jquery.com   
 */
 (function($) {
-// TODO
-//    $.fn.htmlClean = function(options) {
-//        // iterate and html clean each matched element
-//        return this.each(function() {
-//            
-//        });
-//    };
-    
+    $.fn.htmlClean = function(options) {
+        // iterate and html clean each matched element
+        return this.each(function() {
+            var $this = $(this);
+            if (this.value) {
+                this.value = $.htmlClean(this.value, options);
+            } else {
+                this.innerHTML = $.htmlClean(this.innerHTML, options);
+            }
+        });
+    };
+
     // clean the passed html
     $.htmlClean = function(html, options) {
         options = jQuery.extend($.htmlClean.defaults, options);
@@ -35,7 +41,7 @@
         }
 
         while (tagMatch = tagsRE.exec(html)) {
-            var tag = new Tag(tagMatch[3], tagMatch[1]);
+            var tag = new Tag(tagMatch[3], tagMatch[1], tagMatch[4]);
 
             // add the text
             var text = RegExp.leftContext.substring(lastIndex);
@@ -59,16 +65,16 @@
                 }
             } else {
                 // create a new element
-                var element = new Element(tag, tagMatch[4]);
+                var element = new Element(tag);
 
-                if (!tag.toRemove) {
+                if (!tag.toIgnore) {
                     // add attributes
-                    if (tag.attributes != null) {
+                    if (tag.allowedAttributes != null) {
                         var attrMatch;
-                        while (attrMatch = attrsRE.exec(tagMatch[4])) {
-                            if ((tag.attributes.length == 0
-                                || $.inArray(attrMatch[1], tag.attributes) > -1)
-                                && $.inArray(attrMatch[1], options.removeAttrs) == -1) {
+                        while (attrMatch = attrsRE.exec(tag.rawAttributes)) {
+                            if ((tag.allowedAttributes.length == 0
+                                    || $.inArray(attrMatch[1], tag.allowedAttributes) > -1)
+                                    && $.inArray(attrMatch[1], options.removeAttrs) == -1) {
                                 element.attributes.push(new Attribute(attrMatch[1], attrMatch[2]));
                             }
                         }
@@ -116,6 +122,17 @@
     function render(element) {
         var output = [];
         var empty = element.attributes.length == 0;
+
+        // check for replace
+        for (var i = 0; i < tagReplace.length; i++) {
+            if (tagReplace[i][0] == element.tag.name) {
+                if (tagReplace[i].length == 1
+                        || tagReplace[i][1].test(element.tag.rawAttributes)) {
+                    element.tag.name = tagReplaceWith[i];
+                }
+            }
+        }
+
         if (!element.isRoot) {
             // render opening tag
             output.push("<");
@@ -157,7 +174,7 @@
                     }
                     if (text.length > 0) { outputChildren.push(text); }
                     // don't allow a break to be the last child
-                } else if (i != element.children.length - 1 || child.tag.name!="br") {
+                } else if (i != element.children.length - 1 || child.tag.name != "br") {
                     outputChildren = outputChildren.concat(render(child));
                 }
             }
@@ -221,10 +238,8 @@
     }
 
     // Tag object
-    function Tag(name, close) {
-        name = name.toLowerCase();
-        var i = $.inArray(name, tagReplace);
-        this.name = i == -1 ? name : tagReplaceWith[i];
+    function Tag(name, close, rawAttributes) {
+        this.name = name.toLowerCase();
 
         this.isSelfClosing = $.inArray(this.name, tagSelfClosing) > -1;
         this.isNonClosing = $.inArray(this.name, tagNonClosing) > -1;
@@ -235,9 +250,10 @@
         this.requiredParent = tagRequiredParent[$.inArray(this.name, tagRequiredParent) + 1];
         this.allowEmpty = $.inArray(this.name, tagAllowEmpty) > -1;
 
-        this.toRemove = $.inArray(this.name, tagRemove) > -1;
+        this.toIgnore = $.inArray(this.name, tagIgnore) > -1;
 
-        this.attributes = tagAttributes[$.inArray(this.name, tagAttributes) + 1];
+        this.rawAttributes = rawAttributes;
+        this.allowedAttributes = tagAttributes[$.inArray(this.name, tagAttributes) + 1];
 
         return this;
     }
@@ -260,19 +276,20 @@
     // checks a char is white space or not
     $.htmlClean.isWhitespace = function(c) { return $.inArray(c, whitespace) != -1; }
 
-    // tags to be removed, content will still be output
-    var tagRemove = [
+    // tags to be ignored, content will still be output
+    var tagIgnore = [
         "basefont", "center", "dir", "font", "frame", "frameset",
         "iframe", "isindex", "menu", "noframes",
-        "s", "span", "strike", "u"];
+        "s", "strike", "u"];
     // tags to replace, and what to replace with at the same index
-    var tagReplace = ["b", "big", "i"];
-    var tagReplaceWith = ["strong", "strong", "em"];
+    // [[<Tag Name>,<Pattern Match on Attributes], ...]
+    var tagReplace = [["b"], ["big"], ["span", /weight:\s*bold/i], ["i"], ["span", /style:\s*italic/i]];
+    var tagReplaceWith = ["strong", "strong", "strong", "em", "em"];
     // tags which are inline
     var tagInline = [
-        "a", "abbr", "acronym", "address", "big", "br", "button",
+        "a", "abbr", "acronym", "address", "b", "big", "br", "button",
         "caption", "cite", "code", "del", "em", "font",
-        "hr", "input", "img", "ins", "label", "legend", "map", "q",
+        "hr", "i", "input", "img", "ins", "label", "legend", "map", "q",
         "samp", "select", "small", "span", "strong", "sub", "sup",
         "tt", "var"];
     var tagDisallowNest = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "th", "td"];
