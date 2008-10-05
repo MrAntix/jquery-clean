@@ -1,24 +1,34 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Clean HTML</title>
+    <title>$.htmlClean</title>
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script type="text/javascript" src="jquery.htmlClean.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $("#Clean").click(function() {
-                var html = $.htmlClean($("#Input").val(),
-                    {
-                        bodyOnly: $("#BodyOnly").attr("checked"),
-                        removeAttrs: $("#RemoveAttrs").val().split(',')
-                    });
-                    $("#OutputHTML").val(html);
-                    $("#OutputWYSIWYG").html(html);
-                    return false;
+                var options = {
+                    bodyOnly: $("#BodyOnly").attr("checked"),
+                    removeAttrs: $("#RemoveAttrs").val().split(',')
+                };
+                // clean using static function
+                // var html = $.htmlClean($("#Input").val(), options);
+
+                // $("#OutputHTML").val(html);
+                // $("#OutputWYSIWYG").html(html);
+
+                // clean using query function
+                var dirtyHtml = $("#Input").val();
+
+                $("#OutputHTML").val(dirtyHtml);
+                $("#OutputWYSIWYG").html(dirtyHtml);
+
+                $("#OutputHTML,#OutputWYSIWYG").htmlClean(options);
+
+                return false;
             });
         });
     </script>
-
 </head>
 <body>
     <form>
@@ -26,6 +36,8 @@
 <P>This is <em>an inline</em> tag<BR>test</p>
 <p>        Unecessary white space test          </p>
 <p><b>Replace</b> test</p>
+<p>Safari style span <span class="Apple-style-span" style="font-weight: bold;">bold </span>test</p>
+<p>Safari style span <span class="Apple-style-span" style="font-style: italic;">italic </span>test</p>
 <ul>
 <li>Un-closed List Item Test 1
 <li>Un-closed List Item Test 2
