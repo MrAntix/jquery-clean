@@ -3,7 +3,7 @@
     Anthony Johnston
     http://www.antix.co.uk    
     
-    version 0.9.3
+    version 0.9.4
 
     Use and distibution http://www.gnu.org/licenses/gpl.html
     requires jQuery http://jquery.com   
@@ -283,8 +283,8 @@
         "s", "strike", "u"];
     // tags to replace, and what to replace with at the same index
     // [[<Tag Name>,<Pattern Match on Attributes], ...]
-    var tagReplace = [["b"], ["big"], ["span", /weight:\s*bold/i], ["i"], ["span", /style:\s*italic/i]];
-    var tagReplaceWith = ["strong", "strong", "strong", "em", "em"];
+    var tagReplace = [["b"], ["big"], ["span", /weight:\s*bold/i], ["i"], ["span", /style:\s*italic/i], ["span", /-align:\s*super/i], ["span", /-align:\s*sub/i]];
+    var tagReplaceWith = ["strong", "strong", "strong", "em", "em", "sup", "sub"];
     // tags which are inline
     var tagInline = [
         "a", "abbr", "acronym", "address", "b", "big", "br", "button",
