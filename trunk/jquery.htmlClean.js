@@ -267,11 +267,28 @@
     }
 
 
-    // trim of white space, doesn't use regex
+    // trim off white space, doesn't use regex
     $.htmlClean.trim = function(text) {
+        return text.substring($.htmlClean.trimStartIndex(text), $.htmlClean.trimEndIndex(text));
+    }
+    // trim off starting white space, doesn't use regex
+    $.htmlClean.trimStart = function(text) {
+        return text.substring($.htmlClean.trimStartIndex(text), text.length);
+    }
+    // trim off ending white space, doesn't use regex
+    $.htmlClean.trimEnd = function(text) {
+        return text.substring(0, $.htmlClean.trimEndIndex(text));
+    }
+    // get the index for a trim at the start of the text passed
+    $.htmlClean.trimStartIndex = function(text) {
         for (var start = 0; start < text.length - 1 && $.htmlClean.isWhitespace(text.charAt(start)); start++);
+        return start;
+    }
+    // get the index for a trim at the end of the text passed
+    $.htmlClean.trimEndIndex = function(text, start) {
+        start = start || 0;
         for (var end = text.length - 1; end >= start && $.htmlClean.isWhitespace(text.charAt(end)); end--);
-        return text.substring(start, end + 1);
+        return end + 1;
     }
     // checks a char is white space or not
     $.htmlClean.isWhitespace = function(c) { return $.inArray(c, whitespace) != -1; }
