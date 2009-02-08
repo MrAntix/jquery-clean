@@ -3,7 +3,7 @@ HTML Clean for $
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.0.0
+version 1.0.1
 
 Use and distibution http://www.gnu.org/licenses/gpl.html
 requires jQuery http://jquery.com   

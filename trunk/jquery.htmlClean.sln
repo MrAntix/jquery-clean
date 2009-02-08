@@ -1,0 +1,15 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ECA5C20C-DAA6-4295-90CF-4C9E770F191B}"
+	ProjectSection(SolutionItems) = preProject
+		jquery.htmlClean-min.js = jquery.htmlClean-min.js
+		jquery.htmlClean.js = jquery.htmlClean.js
+		jquery.htmlClean.test.htm = jquery.htmlClean.test.htm
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
