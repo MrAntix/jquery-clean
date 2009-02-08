@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>$.htmlClean</title>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="jquery.htmlClean.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#Clean").click(function() {
+                var options = {
+                    bodyOnly: $("#BodyOnly").attr("checked"),
+                    removeAttrs: $("#RemoveAttrs").val().split(',')
+                };
+                // clean using static function
+                // var html = $.htmlClean($("#Input").val(), options);
+
+                // $("#OutputHTML").val(html);
+                // $("#OutputWYSIWYG").html(html);
+
+                // clean using query function
+                var dirtyHtml = $("#Input").val();
+
+                $("#OutputHTML").val(dirtyHtml);
+                $("#OutputWYSIWYG").html(dirtyHtml);
+
+                $("#OutputHTML,#OutputWYSIWYG").htmlClean(options);
+
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+    <form>
+        <textarea id="Input" rows="15" cols="100"><H1 class="header"><P>Nested P Test</H1>
+<P>This is <em>an inline</em> tag<BR>test</p>
+<p>        Unecessary white space test          </p>
+<p><b>Replace</b> test</p>
+<p>Safari style span <span class="Apple-style-span" style="font-weight: bold;">bold </span>test</p>
+<p>Safari style span <span class="Apple-style-span" style="font-style: italic;">italic </span>test</p>
+<ul>
+<li>Un-closed List Item Test 1
+<li>Un-closed List Item Test 2
+</ul>
+<table>
+    <tr>
+        <th>Un-closed Cell & row Test 1
+        <td>Un-closed Cell & row Test 2
+        <td>Un-closed Cell & row Test 2
+    <tr>
+        <th>  White space in cell test 1 </th>
+        <td>White space in cell test 2 </td>
+        <td> White space in cell test 3</td>
+    </tr>
+    <tr>
+        <th>Next cells empty test</th>
+        <td>&nbsp;</td>
+        <td></td>
+    </tr>
+</table></textarea><br />
+        
+        <label>body only<input id="BodyOnly" type="checkbox" checked="checked" /></label><br />
+        <label>remove attrs<input id="RemoveAttrs" value="class" />(comma separated, no spaces)</label><br />
+        
+        <button id="Clean" href="#">Clean</button><br />
+        
+        <textarea id="OutputHTML" rows="15" cols="100"></textarea><br />
+        <div id="OutputWYSIWYG"></div>
+    </form>
+</body>
+</html>
