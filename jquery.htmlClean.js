@@ -1,12 +1,12 @@
 /*
-    HTML Clean for $   
-    Anthony Johnston
-    http://www.antix.co.uk    
+HTML Clean for $   
+Anthony Johnston
+http://www.antix.co.uk    
     
-    version 0.9.4
+version 1.0.0
 
-    Use and distibution http://www.gnu.org/licenses/gpl.html
-    requires jQuery http://jquery.com   
+Use and distibution http://www.gnu.org/licenses/gpl.html
+requires jQuery http://jquery.com   
 */
 (function($) {
     $.fn.htmlClean = function(options) {
@@ -26,7 +26,7 @@
         options = jQuery.extend($.htmlClean.defaults, options);
 
         var tagsRE = /<(\/)?(\w+:)?([\w]+)([^>]*)>/gi;
-        var attrsRE = /(\w+)=(".*"|'.*'|[^\s>]*)/gi;
+        var attrsRE = /(\w+)=(".*?"|'.*?'|[^\s>]*?)/gi;
 
         var tagMatch;
         var root = new Element();
@@ -72,9 +72,8 @@
                     if (tag.allowedAttributes != null) {
                         var attrMatch;
                         while (attrMatch = attrsRE.exec(tag.rawAttributes)) {
-                            if ((tag.allowedAttributes.length == 0
-                                    || $.inArray(attrMatch[1], tag.allowedAttributes) > -1)
-                                    && $.inArray(attrMatch[1], options.removeAttrs) == -1) {
+                            if (tag.allowedAttributes.length == 0
+                                    || $.inArray(attrMatch[1], tag.allowedAttributes) > -1) {
                                 element.attributes.push(new Attribute(attrMatch[1], attrMatch[2]));
                             }
                         }
@@ -110,7 +109,7 @@
         }
 
         // render doc
-        return render(root).join("");
+        return render(root, options).join("");
     }
 
     // defaults
@@ -119,7 +118,7 @@
         removeAttrs: ["class"]
     }
 
-    function render(element) {
+    function render(element, options) {
         var output = [];
         var empty = element.attributes.length == 0;
 
@@ -138,10 +137,12 @@
             output.push("<");
             output.push(element.tag.name);
             $.each(element.attributes, function() {
-                output.push(" ");
-                output.push(this.name);
-                output.push("=");
-                output.push(this.value);
+                if ($.inArray(this.name, options.removeAttrs) == -1) {
+                    output.push(" ");
+                    output.push(this.name);
+                    output.push("=");
+                    output.push(this.value);
+                }
             });
         }
 
@@ -175,7 +176,7 @@
                     if (text.length > 0) { outputChildren.push(text); }
                     // don't allow a break to be the last child
                 } else if (i != element.children.length - 1 || child.tag.name != "br") {
-                    outputChildren = outputChildren.concat(render(child));
+                    outputChildren = outputChildren.concat(render(child, options));
                 }
             }
             if (outputChildren.length > 0) {
@@ -269,25 +270,20 @@
 
     // trim off white space, doesn't use regex
     $.htmlClean.trim = function(text) {
-        return text.substring($.htmlClean.trimStartIndex(text), $.htmlClean.trimEndIndex(text));
+        return $.htmlClean.trimStart($.htmlClean.trimEnd(text));
     }
-    // trim off starting white space, doesn't use regex
     $.htmlClean.trimStart = function(text) {
-        return text.substring($.htmlClean.trimStartIndex(text), text.length);
+        return text.substring($.htmlClean.trimStartIndex);
     }
-    // trim off ending white space, doesn't use regex
-    $.htmlClean.trimEnd = function(text) {
-        return text.substring(0, $.htmlClean.trimEndIndex(text));
-    }
-    // get the index for a trim at the start of the text passed
     $.htmlClean.trimStartIndex = function(text) {
         for (var start = 0; start < text.length - 1 && $.htmlClean.isWhitespace(text.charAt(start)); start++);
         return start;
     }
-    // get the index for a trim at the end of the text passed
-    $.htmlClean.trimEndIndex = function(text, start) {
-        start = start || 0;
-        for (var end = text.length - 1; end >= start && $.htmlClean.isWhitespace(text.charAt(end)); end--);
+    $.htmlClean.trimEnd = function(text) {
+        return text.substring(0, $.htmlClean.trimEndIndex(text));
+    }
+    $.htmlClean.trimEndIndex = function(text) {
+        for (var end = text.length - 1; end >= 0 && $.htmlClean.isWhitespace(text.charAt(end)); end--);
         return end + 1;
     }
     // checks a char is white space or not
