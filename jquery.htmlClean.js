@@ -273,7 +273,7 @@ requires jQuery http://jquery.com
         return $.htmlClean.trimStart($.htmlClean.trimEnd(text));
     }
     $.htmlClean.trimStart = function(text) {
-        return text.substring($.htmlClean.trimStartIndex);
+        return text.substring($.htmlClean.trimStartIndex(text));
     }
     $.htmlClean.trimStartIndex = function(text) {
         for (var start = 0; start < text.length - 1 && $.htmlClean.isWhitespace(text.charAt(start)); start++);
