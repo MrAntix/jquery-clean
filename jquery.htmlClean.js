@@ -164,15 +164,15 @@ requires jQuery http://jquery.com
                 var child = element.children[i];
                 var text = $.htmlClean.trim(textClean(child.toString()));
                 if (isInline(child)) {
-                    if (i > 0 && text.length>0
+                    if (i > 0 && text.length > 0
                         && (startsWithWhitespace(child) || endsWithWhitespace(element.children[i - 1]))) {
                         outputChildren.push(" ");
                     }
                 }
                 if (isText(child)) {
                     if (text.length > 0) { outputChildren.push(text); }
-                    // don't allow a break to be the last child
                 } else {
+                    // don't allow a break to be the last child
                     if (i != element.children.length - 1 || child.tag.name != "br") {
                         outputChildren = outputChildren.concat(render(child, options));
                     }
@@ -222,7 +222,7 @@ requires jQuery http://jquery.com
         this.attributes = [];
         this.children = [];
 
-        this.toString=function() {
+        this.toString = function() {
             return this.children.join("");
         }
 
