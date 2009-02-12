@@ -2,70 +2,60 @@
 <head>
     <title>$.htmlClean</title>
 
+    <style type="text/css">
+        html,body{background-color:#fcf9f3}
+        .result{font-family:Monospace}
+        .success{color:#0c0}
+        .failure{color:#c00}
+    </style>
+
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script type="text/javascript" src="jquery.htmlClean.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $("#Clean").click(function() {
-                var options = {
-                    bodyOnly: $("#BodyOnly").attr("checked"),
-                    removeAttrs: $("#RemoveAttrs").val().split(',')
-                };
-                // clean using static function
-                // var html = $.htmlClean($("#Input").val(), options);
 
-                // $("#OutputHTML").val(html);
-                // $("#OutputWYSIWYG").html(html);
-
-                // clean using query function
-                var dirtyHtml = $("#Input").val();
-
-                $("#OutputHTML").val(dirtyHtml);
-                $("#OutputWYSIWYG").html(dirtyHtml);
-
-                $("#OutputHTML,#OutputWYSIWYG").htmlClean(options);
-
-                return false;
-            });
-        });
-    </script>
 </head>
 <body>
-    <form>
-        <textarea id="Input" rows="15" cols="100"><H1 class="header"><P>Nested P Test</H1>
-<P>This is <em>an inline</em> tag<BR>test</p>
-<p>        Unecessary white space test          </p>
-<p><b>Replace</b> test</p>
-<p>Safari style span <span class="Apple-style-span" style="font-weight: bold;">bold </span>test</p>
-<p>Safari style span <span class="Apple-style-span" style="font-style: italic;">italic </span>test</p>
-<ul>
-<li>Un-closed List Item Test 1
-<li>Un-closed List Item Test 2
-</ul>
-<table>
-    <tr>
-        <th>Un-closed Cell & row Test 1
-        <td>Un-closed Cell & row Test 2
-        <td>Un-closed Cell & row Test 2
-    <tr>
-        <th>  White space in cell test 1 </th>
-        <td>White space in cell test 2 </td>
-        <td> White space in cell test 3</td>
-    </tr>
-    <tr>
-        <th>Next cells empty test</th>
-        <td>&nbsp;</td>
-        <td></td>
-    </tr>
-</table></textarea><br />
+
+    <h2>Clean</h2>
+    <script type="text/javascript">
+        function encode(value) {
+            return value
+                .replace(/\&/g, '&amp;')
+                .replace(/\</g, '&lt;')
+                .replace(/\>/g, '&gt;');
+
+        }
+        function test_isEqual(actual, expected) {
+            document.write("<p class='result ".concat(
+                actual == expected ? "success" : "failure",
+                "'>actual&nbsp;&nbsp;: '", encode(actual), "'<br />expected: '", encode(expected), "'</p>"));
+        }
+
+        test_isEqual($.htmlClean("<H1 class=\"header\"><P>Nested P Test</H1>"), "<h1>Nested P Test</h1>");
+        test_isEqual($.htmlClean("<P>This is <em>an inline </em> tag<BR>test</p>"), "<p>This is <em>an inline</em> tag<br />test</p>");
+        test_isEqual($.htmlClean("<p>        Unecessary white space test          </p>"), "<p>Unecessary white space test</p>");
+        test_isEqual($.htmlClean("<p><b>Replace</b> test</p>"), "<p><strong>Replace</strong> test</p>");
+        test_isEqual($.htmlClean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-weight: bold;\">bold</span> test</p>"), "<p>Safari style span <strong>bold</strong> test</p>");
+        test_isEqual($.htmlClean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-style: italic;\">italic</span> test</p>"), "<p>Safari style span <em>italic</em> test</p>");
         
-        <label>body only<input id="BodyOnly" type="checkbox" checked="checked" /></label><br />
-        <label>remove attrs<input id="RemoveAttrs" value="class" />(comma separated, no spaces)</label><br />
+        test_isEqual($.htmlClean("<ul>\n<li>Un-closed List Item Test 1\n<li>Un-closed List Item Test 2\n</ul>"), "<ul><li>Un-closed List Item Test 1</li><li>Un-closed List Item Test 2</li></ul>");
+
+        test_isEqual($.htmlClean("<table>    <tr>\n <th>Un-closed Cell & row Test 1\n<td>Un-closed Cell & row Test 2\n</table>"), "<table><tr><th>Un-closed Cell & row Test 1</th><td>Un-closed Cell & row Test 2</td></tr></table>");
+        test_isEqual($.htmlClean("<table>\n<tr>\n <th>  White space in cell test 1 </th><td>White space in cell test 2 </td></tr></table>"), "<table><tr><th>White space in cell test 1</th><td>White space in cell test 2</td></tr></table>");
+        test_isEqual($.htmlClean("<table><tr><th>Next cells empty test</th><td>&nbsp;</td><td></td></tr></table>"), "<table><tr><th>Next cells empty test</th><td></td><td></td></tr></table>");
         
-        <button id="Clean" href="#">Clean</button><br />
-        
-        <textarea id="OutputHTML" rows="15" cols="100"></textarea><br />
-        <div id="OutputWYSIWYG"></div>
-    </form>
+    </script>    
+
+    <h2>Trim</h2>
+    <script type="text/javascript">
+        test_isEqual($.htmlClean.trim("  Hello"), "Hello");
+        test_isEqual($.htmlClean.trim("  Hello   "), "Hello");
+
+        test_isEqual($.htmlClean.trimStart("  Hello"), "Hello");
+        test_isEqual($.htmlClean.trimStart("  Hello   "), "Hello   ");
+
+        test_isEqual($.htmlClean.trimEnd("  Hello"), "  Hello");
+        test_isEqual($.htmlClean.trimEnd("  Hello   "), "  Hello");
+
+    </script>
 </body>
 </html>
