@@ -50,9 +50,9 @@ requires jQuery http://jquery.com
                 if (container.children.length > 0
                         && isText(child = container.children[container.children.length - 1])) {
                     // merge text
-                    container.children[container.children.length - 1] = textClean(child.concat(text));
+                    container.children[container.children.length - 1] = child.concat(text);
                 } else {
-                    container.children.push(textClean(text));
+                    container.children.push(text);
                 }
             }
             var lastIndex = tagsRE.lastIndex;
@@ -162,21 +162,20 @@ requires jQuery http://jquery.com
             var outputChildren = [];
             for (var i = 0; i < element.children.length; i++) {
                 var child = element.children[i];
+                var text = $.htmlClean.trim(textClean(child.toString()));
+                if (isInline(child)) {
+                    if (i > 0 && text.length>0
+                        && (startsWithWhitespace(child) || endsWithWhitespace(element.children[i - 1]))) {
+                        outputChildren.push(" ");
+                    }
+                }
                 if (isText(child)) {
-                    var text = "";
-                    if ((i == 0 ? isInline(element) : isInline(element.children[i - 1]))
-                            && $.htmlClean.isWhitespace(child.charAt(0))) {
-                        text = text.concat(" ");
-                    }
-                    text = text.concat($.htmlClean.trim(child));
-                    if ((i == element.children.length - 1 ? isInline(element) : isInline(element.children[i + 1]))
-                            && $.htmlClean.isWhitespace(child.charAt(child.length - 1))) {
-                        text = text.concat(" ");
-                    }
                     if (text.length > 0) { outputChildren.push(text); }
                     // don't allow a break to be the last child
-                } else if (i != element.children.length - 1 || child.tag.name != "br") {
-                    outputChildren = outputChildren.concat(render(child, options));
+                } else {
+                    if (i != element.children.length - 1 || child.tag.name != "br") {
+                        outputChildren = outputChildren.concat(render(child, options));
+                    }
                 }
             }
             if (outputChildren.length > 0) {
@@ -189,10 +188,6 @@ requires jQuery http://jquery.com
                 output.push("</");
                 output.push(element.tag.name);
                 output.push(">");
-
-                //                if (!element.tag.isInline) {
-                //                    output.push("\n");
-                //                }
             }
         }
 
@@ -227,6 +222,10 @@ requires jQuery http://jquery.com
         this.attributes = [];
         this.children = [];
 
+        this.toString=function() {
+            return this.children.join("");
+        }
+
         return this;
     }
 
@@ -259,14 +258,22 @@ requires jQuery http://jquery.com
         return this;
     }
 
+    function startsWithWhitespace(item) {
+        while (isElement(item) && item.children.length > 0) { item = item.children[0] }
+        return isText(item) && item.length > 0 && $.htmlClean.isWhitespace(item.charAt(0));
+    }
+    function endsWithWhitespace(item) {
+        while (isElement(item) && item.children.length > 0) { item = item.children[item.children.length - 1] }
+        return isText(item) && item.length > 0 && $.htmlClean.isWhitespace(item.charAt(item.length - 1));
+    }
     function isText(item) { return item.constructor == String; }
     function isInline(item) { return isText(item) || item.tag.isInline; }
+    function isElement(item) { return item.constructor == Element; }
     function textClean(text) {
         return text
             .replace(/&nbsp;|\n/g, " ")
             .replace(/\s\s+/g, " ");
     }
-
 
     // trim off white space, doesn't use regex
     $.htmlClean.trim = function(text) {
