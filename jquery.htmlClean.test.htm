@@ -30,8 +30,13 @@
                 "'>actual&nbsp;&nbsp;: '", encode(actual), "'<br />expected: '", encode(expected), "'</p>"));
         }
 
+        test_isEqual($.htmlClean("<P>This is<em> inline </em><em>consecutive</em> </p>"), "<p>This is <em>inline</em> <em>consecutive</em></p>");
+        test_isEqual($.htmlClean("<P>This is <em>an inline </em> tag<BR>test<br></p>"), "<p>This is <em>an inline</em> tag<br />test</p>");
+        test_isEqual($.htmlClean("<P>This is <em> inline<b>  nested</b> </em> test</p>"), "<p>This is <em>inline <strong>nested</strong></em> test</p>");
+        test_isEqual($.htmlClean("<P>This is <em>inline<b>nested</b> </em>test</p>"), "<p>This is <em>inline<strong>nested</strong></em> test</p>");
+        test_isEqual($.htmlClean("<P>This is <em>inline split<b>nested </em>te</b>st</p>"), "<p>This is <em>inline split<strong>nested</strong></em> test</p>");
+
         test_isEqual($.htmlClean("<H1 class=\"header\"><P>Nested P Test</H1>"), "<h1>Nested P Test</h1>");
-        test_isEqual($.htmlClean("<P>This is <em>an inline </em> tag<BR>test</p>"), "<p>This is <em>an inline</em> tag<br />test</p>");
         test_isEqual($.htmlClean("<p>        Unecessary white space test          </p>"), "<p>Unecessary white space test</p>");
         test_isEqual($.htmlClean("<p><b>Replace</b> test</p>"), "<p><strong>Replace</strong> test</p>");
         test_isEqual($.htmlClean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-weight: bold;\">bold</span> test</p>"), "<p>Safari style span <strong>bold</strong> test</p>");
