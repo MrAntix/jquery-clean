@@ -5,9 +5,15 @@ http://www.antix.co.uk
     
 version 1.0.1
 
-Use and distibution http://www.gnu.org/licenses/gpl.html
-requires jQuery http://jquery.com   
+25 June 2009 
+
+requires
+jQuery http://jquery.com   
+
 */
+
+/// <reference path="http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.js" />
+
 (function($) {
     $.fn.htmlClean = function(options) {
         // iterate and html clean each matched element
