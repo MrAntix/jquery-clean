@@ -3,17 +3,13 @@ HTML Clean for $
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.0.1
+version 1.0.2
 
-25 June 2009 
+5 Jul 2009 
+requires jQuery http://jquery.com   
 
-requires
-jQuery http://jquery.com   
-
+Use and distibution http://www.gnu.org/licenses/gpl.html
 */
-
-/// <reference path="http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.js" />
-
 (function($) {
     $.fn.htmlClean = function(options) {
         // iterate and html clean each matched element
@@ -143,7 +139,8 @@ jQuery http://jquery.com
             output.push("<");
             output.push(element.tag.name);
             $.each(element.attributes, function() {
-                if ($.inArray(this.name, options.removeAttrs) == -1) {
+                if ($.inArray(this.name, options.removeAttrs) == -1
+                        && this.value != null && this.value.length > 0) {
                     output.push(" ");
                     output.push(this.name);
                     output.push("=");
@@ -176,7 +173,7 @@ jQuery http://jquery.com
                     }
                 }
                 if (isText(child)) {
-                    if (text.length > 0) { outputChildren.push(text); }
+                    if (text.length > 0) outputChildren.push(text);
                 } else {
                     // don't allow a break to be the last child
                     if (i != element.children.length - 1 || child.tag.name != "br") {
@@ -332,7 +329,6 @@ jQuery http://jquery.com
         "tbody", ["table"],
         "tfoot", ["table"]
         ];
-
     var tagProtectContents = ["script", "style", "pre", "code"];
     // tags which self close e.g. <br />
     var tagSelfClosing = ["br", "hr", "img", "link", "meta"];
