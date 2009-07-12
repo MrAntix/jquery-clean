@@ -5,6 +5,8 @@ http://www.antix.co.uk
     
 version 1.0.2
 
+$Revision$
+
 5 Jul 2009 
 requires jQuery http://jquery.com   
 
@@ -117,12 +119,20 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
     // defaults
     $.htmlClean.defaults = {
         bodyOnly: true,
-        removeAttrs: ["class"]
+        removeAttrs: ["class"],
+        format: false,
+        formatIndent: 0
+    }
+
+    function applyFormat(element, options, output, indent) {
+        if (!element.tag.isInline && output.length>0) {
+            output.push("\n");
+            for (i = 0; i < indent; i++) output.push("\t");
+        }
     }
 
     function render(element, options) {
-        var output = [];
-        var empty = element.attributes.length == 0;
+        var output = [], empty = element.attributes.length == 0, indent;
 
         // check for replace
         for (var i = 0; i < tagReplace.length; i++) {
@@ -133,7 +143,6 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
                 }
             }
         }
-
         if (!element.isRoot) {
             // render opening tag
             output.push("<");
@@ -161,6 +170,8 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
                 output.push(">");
             }
 
+            var indent = options.formatIndent++;
+
             // render children
             var outputChildren = [];
             for (var i = 0; i < element.children.length; i++) {
@@ -173,21 +184,29 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
                     }
                 }
                 if (isText(child)) {
-                    if (text.length > 0) outputChildren.push(text);
+                    if (text.length > 0) {
+                        outputChildren.push(text);
+                    }
                 } else {
                     // don't allow a break to be the last child
                     if (i != element.children.length - 1 || child.tag.name != "br") {
+                        if (options.format) applyFormat(child, options, outputChildren, indent);
                         outputChildren = outputChildren.concat(render(child, options));
                     }
                 }
             }
+            options.formatIndent--;
+            
             if (outputChildren.length > 0) {
+                if (options.format && outputChildren[0]!="\n") applyFormat(element, options, output, indent);
                 output = output.concat(outputChildren);
                 empty = false;
             }
 
+
             if (!element.isRoot) {
                 // render the closing tag
+                if (options.format) applyFormat(element, options, output, indent - 1);
                 output.push("</");
                 output.push(element.tag.name);
                 output.push(">");
