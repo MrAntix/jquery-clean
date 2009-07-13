@@ -119,13 +119,14 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
     // defaults
     $.htmlClean.defaults = {
         bodyOnly: true,
-        removeAttrs: ["class"],
+        removeAttrs: [],
+        allowedClasses: [],
         format: false,
         formatIndent: 0
     }
 
     function applyFormat(element, options, output, indent) {
-        if (!element.tag.isInline && output.length>0) {
+        if (!element.tag.isInline && output.length > 0) {
             output.push("\n");
             for (i = 0; i < indent; i++) output.push("\t");
         }
@@ -148,12 +149,29 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
             output.push("<");
             output.push(element.tag.name);
             $.each(element.attributes, function() {
-                if ($.inArray(this.name, options.removeAttrs) == -1
-                        && this.value != null && this.value.length > 0) {
-                    output.push(" ");
-                    output.push(this.name);
-                    output.push("=");
-                    output.push(this.value);
+                if ($.inArray(this.name, options.removeAttrs) == -1) {
+                    var m = RegExp(/^(['"]?)(.*?)['"]?$/).exec(this.value);
+                    var value = m[2];
+                    var valueQuote = m[1];
+
+                    // check for classes allowed
+                    if (this.name == "class") {
+                        value =
+                            $.grep(value.split(" "), function(i) {
+                                return $.inArray(i, options.allowedClasses) > -1;
+                            })
+                            .join(" ");
+                        valueQuote = "\"";
+                    }
+
+                    if (value != null && value.length > 0) {
+                        output.push(" ");
+                        output.push(this.name);
+                        output.push("=");
+                        output.push(valueQuote);
+                        output.push(value);
+                        output.push(valueQuote);
+                    }
                 }
             });
         }
@@ -196,9 +214,9 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
                 }
             }
             options.formatIndent--;
-            
+
             if (outputChildren.length > 0) {
-                if (options.format && outputChildren[0]!="\n") applyFormat(element, options, output, indent);
+                if (options.format && outputChildren[0] != "\n") applyFormat(element, options, output, indent);
                 output = output.concat(outputChildren);
                 empty = false;
             }
