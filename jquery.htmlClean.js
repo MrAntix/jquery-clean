@@ -27,7 +27,7 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
 
     // clean the passed html
     $.htmlClean = function(html, options) {
-        options = jQuery.extend($.htmlClean.defaults, options);
+        options = $.extend({}, $.htmlClean.defaults, options);
 
         var tagsRE = /<(\/)?(\w+:)?([\w]+)([^>]*)>/gi;
         var attrsRE = /(\w+)=(".*?"|'.*?'|[^\s>]*?)/gi;
@@ -122,7 +122,14 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
         removeAttrs: [],
         allowedClasses: [],
         format: false,
-        formatIndent: 0
+        formatIndent: 0,
+        // tags to replace, and what to replace with, tag name or regex to match the tag and attributes 
+        replace: [
+            [["b", "big", /span.*?weight:\s*bold/i], "strong"],
+            [["i", /span.*?style:\s*italic/i], "em"],
+            [[/span.*?-align:\s*super/i], "sup"],
+            [[/span.*?-align:\s*sub/i], "sub"]
+        ]
     }
 
     function applyFormat(element, options, output, indent) {
@@ -134,13 +141,17 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
 
     function render(element, options) {
         var output = [], empty = element.attributes.length == 0, indent;
+        var openingTag = this.name.concat(this.rawAttributes == undefined ? "" : this.rawAttributes);
 
-        // check for replace
-        for (var i = 0; i < tagReplace.length; i++) {
-            if (tagReplace[i][0] == element.tag.name) {
-                if (tagReplace[i].length == 1
-                        || tagReplace[i][1].test(element.tag.rawAttributes)) {
-                    element.tag.name = tagReplaceWith[i];
+        // check for replacements
+        for (var rep = 0; rep < options.replace.length; rep++) {
+            for (var tag = 0; tag < options.replace[rep][0].length; tag++) {
+                var byName = typeof (options.replace[rep][0][tag]) == "string";
+                if ((byName && options.replace[rep][0][tag] == element.tag.name)
+                        || (!byName && options.replace[rep][0][tag].test(openingTag))) {
+                    element.tag.name = options.replace[rep][1];
+                    rep = options.replace.length;
+                    break;
                 }
             }
         }
@@ -194,7 +205,7 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
             var outputChildren = [];
             for (var i = 0; i < element.children.length; i++) {
                 var child = element.children[i];
-                var text = $.htmlClean.trim(textClean(child.toString()));
+                var text = $.htmlClean.trim(textClean(isText(child) ? child : child.childrenToString()));
                 if (isInline(child)) {
                     if (i > 0 && text.length > 0
                         && (startsWithWhitespace(child) || endsWithWhitespace(element.children[i - 1]))) {
@@ -262,7 +273,7 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
         this.attributes = [];
         this.children = [];
 
-        this.toString = function() {
+        this.childrenToString = function() {
             return this.children.join("");
         }
 
@@ -341,10 +352,6 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
         "basefont", "center", "dir", "font", "frame", "frameset",
         "iframe", "isindex", "menu", "noframes",
         "s", "strike", "u"];
-    // tags to replace, and what to replace with at the same index
-    // [[<Tag Name>,<Pattern Match on Attributes], ...]
-    var tagReplace = [["b"], ["big"], ["span", /weight:\s*bold/i], ["i"], ["span", /style:\s*italic/i], ["span", /-align:\s*super/i], ["span", /-align:\s*sub/i]];
-    var tagReplaceWith = ["strong", "strong", "strong", "em", "em", "sup", "sub"];
     // tags which are inline
     var tagInline = [
         "a", "abbr", "acronym", "address", "b", "big", "br", "button",
