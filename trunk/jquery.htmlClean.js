@@ -1,16 +1,16 @@
 /*
-HTML Clean for $   
+HTML Clean for jQuery   
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.0.2
+version 1.1.0
 
 $Revision$
 
 5 Jul 2009 
 requires jQuery http://jquery.com   
 
-Use and distibution http://www.gnu.org/licenses/gpl.html
+Use and distibution http://www.opensource.org/licenses/bsd-license.php
 */
 (function($) {
     $.fn.htmlClean = function(options) {
@@ -141,7 +141,7 @@ Use and distibution http://www.gnu.org/licenses/gpl.html
 
     function render(element, options) {
         var output = [], empty = element.attributes.length == 0, indent;
-        var openingTag = this.name.concat(this.rawAttributes == undefined ? "" : this.rawAttributes);
+        var openingTag = this.name.concat(element.tag.rawAttributes == undefined ? "" : element.tag.rawAttributes);
 
         // check for replacements
         for (var rep = 0; rep < options.replace.length; rep++) {
