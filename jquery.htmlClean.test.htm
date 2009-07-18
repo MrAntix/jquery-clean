@@ -4,7 +4,7 @@
 
     <style type="text/css">
         html,body{background-color:#fcf9f3}
-        .result{font-family:Monospace}
+        .input,.result{font-family:Monospace}
         .success{color:#0c0}
         .failure{color:#c00}
     </style>
@@ -24,43 +24,58 @@
                 .replace(/\>/g, '&gt;');
 
         }
+        function clean(input, expected) {
+            document.write("<p class='input'>".concat(encode(input), "</p>"));
+            test_isEqual($.htmlClean(input), expected)
+        }
         function test_isEqual(actual, expected) {
             document.write("<p class='result ".concat(
                 actual == expected ? "success" : "failure",
                 "'>actual&nbsp;&nbsp;: '", encode(actual), "'<br />expected: '", encode(expected), "'</p>"));
         }
 
-        test_isEqual($.htmlClean("<P>This is<em> inline </em><em>consecutive</em> </p>"), "<p>This is <em>inline</em> <em>consecutive</em></p>");
-        test_isEqual($.htmlClean("<P>This is <em>an inline </em> tag<BR>test<br></p>"), "<p>This is <em>an inline</em> tag<br />test</p>");
-        test_isEqual($.htmlClean("<P>This is <em> inline<b>  nested</b> </em> test</p>"), "<p>This is <em>inline <strong>nested</strong></em> test</p>");
-        test_isEqual($.htmlClean("<P>This is <em>inline<b>nested</b> </em>test</p>"), "<p>This is <em>inline<strong>nested</strong></em> test</p>");
-        test_isEqual($.htmlClean("<P>This is <em>inline split<b>nested </em>te</b>st</p>"), "<p>This is <em>inline split<strong>nested</strong></em> test</p>");
+        clean("<P>This is<i> inline </i><b>consecutive</b> </p>", "<p>This is <em>inline</em> <strong>consecutive</strong></p>");
+        clean("<P>This is <em>an inline </em> tag<BR>test<br></p>", "<p>This is <em>an inline</em> tag<br />test</p>");
+        clean("<P>This is <em> inline<b>  nested</b> </em> test</p>", "<p>This is <em>inline <strong>nested</strong></em> test</p>");
+        clean("<P>This is <em>inline<b>nested</b> </em>test</p>", "<p>This is <em>inline<strong>nested</strong></em> test</p>");
+        clean("<P>This is <i>inline split<b>nested </i>te</b>st</p>", "<p>This is <em>inline split<strong>nested</strong></em> test</p>");
 
-        test_isEqual($.htmlClean("<H1 class=\"header\"><P>Nested P Test</H1>"), "<h1>Nested P Test</h1>");
-        test_isEqual($.htmlClean("<p>        Unecessary white space test          </p>"), "<p>Unecessary white space test</p>");
-        test_isEqual($.htmlClean("<p><b>Replace</b> test</p>"), "<p><strong>Replace</strong> test</p>");
-        test_isEqual($.htmlClean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-weight: bold;\">bold</span> test</p>"), "<p>Safari style span <strong>bold</strong> test</p>");
-        test_isEqual($.htmlClean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-style: italic;\">italic</span> test</p>"), "<p>Safari style span <em>italic</em> test</p>");
+        clean("<H1 class=\"header\"><P>Nested P Test</H1>", "<h1>Nested P Test</h1>");
+        clean("<p>        Unecessary white space test          </p>", "<p>Unecessary white space test</p>");
+        clean("<p><b>Replace</b> test</p>", "<p><strong>Replace</strong> test</p>");
+        clean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-weight: bold;\">bold</span> test</p>", "<p>Safari style span <strong>bold</strong> test</p>");
+        clean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-style: italic;\">italic</span> test</p>", "<p>Safari style span <em>italic</em> test</p>");
         
-        test_isEqual($.htmlClean("<ul>\n<li>Un-closed List Item Test 1\n<li>Un-closed List Item Test 2\n</ul>"), "<ul><li>Un-closed List Item Test 1</li><li>Un-closed List Item Test 2</li></ul>");
+        clean("<ul>\n<li>Un-closed List Item Test 1\n<li>Un-closed List Item Test 2\n</ul>", "<ul><li>Un-closed List Item Test 1</li><li>Un-closed List Item Test 2</li></ul>");
 
-        test_isEqual($.htmlClean("<table>    <tr>\n <th>Un-closed Cell & row Test 1\n<td>Un-closed Cell & row Test 2\n</table>"), "<table><tr><th>Un-closed Cell & row Test 1</th><td>Un-closed Cell & row Test 2</td></tr></table>");
-        test_isEqual($.htmlClean("<table>\n<tr>\n <th>  White space in cell test 1 </th><td>White space in cell test 2 </td></tr></table>"), "<table><tr><th>White space in cell test 1</th><td>White space in cell test 2</td></tr></table>");
-        test_isEqual($.htmlClean("<table><tr><th>Next cells empty test</th><td>&nbsp;</td><td></td></tr></table>"), "<table><tr><th>Next cells empty test</th><td></td><td></td></tr></table>");
+        clean("<table>    <tr>\n <th>Un-closed Cell & row Test 1\n<td>Un-closed Cell & row Test 2\n</table>", "<table><tr><th>Un-closed Cell & row Test 1</th><td>Un-closed Cell & row Test 2</td></tr></table>");
+        clean("<table>\n<tr>\n <th>  White space in cell test 1 </th><td>White space in cell test 2 </td></tr></table>", "<table><tr><th>White space in cell test 1</th><td>White space in cell test 2</td></tr></table>");
+        clean("<table><tr><th>Next cells empty test</th><td>&nbsp;</td><td></td></tr></table>", "<table><tr><th>Next cells empty test</th><td></td><td></td></tr></table>");
         
     </script>    
 
     <h2>Trim</h2>
     <script type="text/javascript">
-        test_isEqual($.htmlClean.trim("  Hello"), "Hello");
-        test_isEqual($.htmlClean.trim("  Hello   "), "Hello");
+        clean.trim("  Hello", "Hello");
+        clean.trim("  Hello   ", "Hello");
 
-        test_isEqual($.htmlClean.trimStart("  Hello"), "Hello");
-        test_isEqual($.htmlClean.trimStart("  Hello   "), "Hello   ");
+        clean.trimStart("  Hello", "Hello");
+        clean.trimStart("  Hello   ", "Hello   ");
 
-        test_isEqual($.htmlClean.trimEnd("  Hello"), "  Hello");
-        test_isEqual($.htmlClean.trimEnd("  Hello   "), "  Hello");
+        clean.trimEnd("  Hello", "  Hello");
+        clean.trimEnd("  Hello   ", "  Hello");
 
     </script>
+    
+    <h2>Example</h2>
+    <pre>$.htmlClean("&lt;H1 class=\"header\"&gt;&lt;P&gt;Nested P Test&lt;/H1&gt;", { format: true })</pre>
+    <textarea id="Output"></textarea>
+    
+    <script type="text/javascript">
+        $("#Output").val(
+            $.htmlClean("<H1 class=\"header\"><P>Nested P Test</H1>", { format: true })
+        );
+    </script>
+    
 </body>
 </html>
