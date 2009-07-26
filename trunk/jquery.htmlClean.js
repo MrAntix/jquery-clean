@@ -43,6 +43,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 html = tagMatch[1];
             }
         }
+        html = html.concat("<xxx>"); // ensure last element/text is found
 
         while (tagMatch = tagsRE.exec(html)) {
             var tag = new Tag(tagMatch[3], tagMatch[1], tagMatch[4]);
