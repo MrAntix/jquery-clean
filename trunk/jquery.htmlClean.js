@@ -1,4 +1,4 @@
-/*
+/*!
 HTML Clean for jQuery   
 Anthony Johnston
 http://www.antix.co.uk    
@@ -7,7 +7,6 @@ version 1.1.0
 
 $Revision$
 
-5 Jul 2009 
 requires jQuery http://jquery.com   
 
 Use and distibution http://www.opensource.org/licenses/bsd-license.php
