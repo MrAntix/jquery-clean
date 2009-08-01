@@ -1,9 +1,9 @@
-/*!
+/*
 HTML Clean for jQuery   
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.1.0
+version 1.1.1
 
 $Revision$
 
@@ -35,6 +35,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         var root = new Element();
         var stack = [root];
         var container = root;
+        var protect = false;
 
         if (options.bodyOnly) {
             // check for body tag
@@ -43,6 +44,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             }
         }
         html = html.concat("<xxx>"); // ensure last element/text is found
+        var lastIndex;
 
         while (tagMatch = tagsRE.exec(html)) {
             var tag = new Tag(tagMatch[3], tagMatch[1], tagMatch[4]);
@@ -59,7 +61,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     container.children.push(text);
                 }
             }
-            var lastIndex = tagsRE.lastIndex;
+            lastIndex = tagsRE.lastIndex;
 
             if (tag.isClosing) {
                 // find matching container
@@ -101,11 +103,22 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     if (add) {
                         container.children.push(element);
 
-                        // set as current container element
-                        if (!tag.isSelfClosing
-                        && !tag.isNonClosing) {
-                            stack.push(element);
-                            container = element;
+                        if (tag.toProtect) {
+                            // skip to closing tag
+                            while (tagMatch2 = tagsRE.exec(html)) {
+                                var tag2 = new Tag(tagMatch2[3], tagMatch2[1], tagMatch2[4]);
+                                if (tag2.isClosing && tag2.name == tag.name) {
+                                    element.children.push(RegExp.leftContext.substring(lastIndex));
+                                    lastIndex = tagsRE.lastIndex;
+                                    break;
+                                }
+                            }
+                        } else {
+                            // set as current container element
+                            if (!tag.isSelfClosing && !tag.isNonClosing) {
+                                stack.push(element);
+                                container = element;
+                            }
                         }
                     }
                 }
@@ -202,34 +215,38 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             var indent = options.formatIndent++;
 
             // render children
-            var outputChildren = [];
-            for (var i = 0; i < element.children.length; i++) {
-                var child = element.children[i];
-                var text = $.htmlClean.trim(textClean(isText(child) ? child : child.childrenToString()));
-                if (isInline(child)) {
-                    if (i > 0 && text.length > 0
+            if (element.tag.toProtect) {
+                output.push(element.children)
+            } else {
+                var outputChildren = [];
+                for (var i = 0; i < element.children.length; i++) {
+                    var child = element.children[i];
+                    var text = $.htmlClean.trim(textClean(isText(child) ? child : child.childrenToString()));
+                    if (isInline(child)) {
+                        if (i > 0 && text.length > 0
                         && (startsWithWhitespace(child) || endsWithWhitespace(element.children[i - 1]))) {
-                        outputChildren.push(" ");
+                            outputChildren.push(" ");
+                        }
+                    }
+                    if (isText(child)) {
+                        if (text.length > 0) {
+                            outputChildren.push(text);
+                        }
+                    } else {
+                        // don't allow a break to be the last child
+                        if (i != element.children.length - 1 || child.tag.name != "br") {
+                            if (options.format) applyFormat(child, options, outputChildren, indent);
+                            outputChildren = outputChildren.concat(render(child, options));
+                        }
                     }
                 }
-                if (isText(child)) {
-                    if (text.length > 0) {
-                        outputChildren.push(text);
-                    }
-                } else {
-                    // don't allow a break to be the last child
-                    if (i != element.children.length - 1 || child.tag.name != "br") {
-                        if (options.format) applyFormat(child, options, outputChildren, indent);
-                        outputChildren = outputChildren.concat(render(child, options));
-                    }
-                }
-            }
-            options.formatIndent--;
+                options.formatIndent--;
 
-            if (outputChildren.length > 0) {
-                if (options.format && outputChildren[0] != "\n") applyFormat(element, options, output, indent);
-                output = output.concat(outputChildren);
-                empty = false;
+                if (outputChildren.length > 0) {
+                    if (options.format && outputChildren[0] != "\n") applyFormat(element, options, output, indent);
+                    output = output.concat(outputChildren);
+                    empty = false;
+                }
             }
 
 
@@ -302,6 +319,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         this.allowEmpty = $.inArray(this.name, tagAllowEmpty) > -1;
 
         this.toIgnore = $.inArray(this.name, tagIgnore) > -1;
+        this.toProtect = $.inArray(this.name, tagProtect) > -1;
 
         this.rawAttributes = rawAttributes;
         this.allowedAttributes = tagAttributes[$.inArray(this.name, tagAttributes) + 1];
@@ -373,7 +391,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         "tbody", ["table"],
         "tfoot", ["table"]
         ];
-    var tagProtectContents = ["script", "style", "pre", "code"];
+    var tagProtect = ["script", "style", "pre", "code"];
     // tags which self close e.g. <br />
     var tagSelfClosing = ["br", "hr", "img", "link", "meta"];
     // tags which do not close
