@@ -216,7 +216,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
             // render children
             if (element.tag.toProtect) {
-                output.push(element.children)
+                output.push($.htmlClean.trim(element.children.join("")));
             } else {
                 var outputChildren = [];
                 for (var i = 0; i < element.children.length; i++) {
@@ -426,6 +426,6 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             "textarea", ["accesskey", "class", "cols", "disabled", "name", "readonly", "rows", "tabindex"]
         ];
     // white space chars
-    var whitespace = [" ", " ", "\t", "\n", "\r", "\f"];
+    var whitespace = ["Â ", " ", "\t", "\n", "\r", "\f"];
 
 })(jQuery);
