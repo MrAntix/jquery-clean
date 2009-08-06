@@ -50,7 +50,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             var tag = new Tag(tagMatch[3], tagMatch[1], tagMatch[4]);
 
             // add the text
-            var text = RegExp.leftContext.substring(lastIndex);
+            var text = html.substring(lastIndex, tagMatch.index);
             if (text.length > 0) {
                 var child = container.children[container.children.length - 1];
                 if (container.children.length > 0
