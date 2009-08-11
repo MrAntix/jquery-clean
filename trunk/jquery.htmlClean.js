@@ -216,7 +216,9 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
             // render children
             if (element.tag.toProtect) {
-                output.push($.htmlClean.trim(element.children.join("")));
+                var outputChildren = $.htmlClean.trim(element.children.join("")).replace(/<br>/ig,"\n");
+                output.push(outputChildren);
+                empty = outputChildren.length == 0;
             } else {
                 var outputChildren = [];
                 for (var i = 0; i < element.children.length; i++) {
