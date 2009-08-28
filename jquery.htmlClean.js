@@ -83,6 +83,11 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                                 element.attributes.push(new Attribute(attrMatch[1], attrMatch[2]));
                             }
                         }
+                        // add required empty ones
+                        $.each(tag.requiredAttributes, function() {
+                            var name = this.toString();
+                            if (!element.hasAttribute(name)) element.attributes.push(new Attribute(name, ""));
+                        });
                     }
 
                     // check container rules
@@ -176,7 +181,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 if ($.inArray(this.name, options.removeAttrs) == -1) {
                     var m = RegExp(/^(['"]?)(.*?)['"]?$/).exec(this.value);
                     var value = m[2];
-                    var valueQuote = m[1];
+                    var valueQuote = m[1] || "'";
 
                     // check for classes allowed
                     if (this.name == "class") {
@@ -185,10 +190,10 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                                 return $.inArray(i, options.allowedClasses) > -1;
                             })
                             .join(" ");
-                        valueQuote = "\"";
+                        valueQuote = "'";
                     }
 
-                    if (value != null && (value.length > 0 || $.inArray(this.name, tagAttributesAllowEmpty) > -1)) {
+                    if (value != null && (value.length > 0 || $.inArray(this.name, element.tag.requiredAttributes) > -1)) {
                         output.push(" ");
                         output.push(this.name);
                         output.push("=");
@@ -216,7 +221,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
             // render children
             if (element.tag.toProtect) {
-                var outputChildren = $.htmlClean.trim(element.children.join("")).replace(/<br>/ig,"\n");
+                var outputChildren = $.htmlClean.trim(element.children.join("")).replace(/<br>/ig, "\n");
                 output.push(outputChildren);
                 empty = outputChildren.length == 0;
             } else {
@@ -291,6 +296,13 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         this.attributes = [];
         this.children = [];
 
+        this.hasAttribute = function(name) {
+            for (var i = 0; i < this.attributes.length; i++) {
+                if (this.attributes[i].name == name) return true;
+            }
+            return false;
+        }
+
         this.childrenToString = function() {
             return this.children.join("");
         }
@@ -324,6 +336,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
         this.rawAttributes = rawAttributes;
         this.allowedAttributes = tagAttributes[$.inArray(this.name, tagAttributes) + 1];
+        this.requiredAttributes = tagAttributesRequired[$.inArray(this.name, tagAttributesRequired) + 1];
 
         return this;
     }
@@ -426,7 +439,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             "table", ["class", "summary"],
             "textarea", ["accesskey", "class", "cols", "disabled", "name", "readonly", "rows", "tabindex"]
         ];
-    var tagAttributesAllowEmpty = ["alt"];
+    var tagAttributesRequired = [[], "img", ["alt"]];
     // white space chars
     var whitespace = [" ", " ", "\t", "\n", "\r", "\f"];
 
