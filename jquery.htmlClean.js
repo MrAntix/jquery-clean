@@ -188,7 +188,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                         valueQuote = "\"";
                     }
 
-                    if (value != null && value.length > 0) {
+                    if (value != null && (value.length > 0 || $.inArray(this.name, tagAttributesAllowEmpty) > -1)) {
                         output.push(" ");
                         output.push(this.name);
                         output.push("=");
@@ -426,6 +426,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             "table", ["class", "summary"],
             "textarea", ["accesskey", "class", "cols", "disabled", "name", "readonly", "rows", "tabindex"]
         ];
+    var tagAttributesAllowEmpty = ["alt"];
     // white space chars
     var whitespace = [" ", " ", "\t", "\n", "\r", "\f"];
 
