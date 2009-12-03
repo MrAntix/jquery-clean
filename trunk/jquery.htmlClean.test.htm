@@ -12,6 +12,8 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script type="text/javascript" src="jquery.htmlClean.js"></script>
     <script type="text/javascript">
+        $.htmlClean.defaults.allowedClasses = [["test", ["p"]]];
+    
         function encode(value) {
             return value
                 .replace(/\&/g, '&amp;')
@@ -46,6 +48,7 @@
 
     <h2>Clean</h2>
     <script type="text/javascript">
+        clean("<p class='test test2'>Allow test css class on a paragraph, <strong class='test'>not on a strong</strong></p>", "<p class='test'>Allow test css class on a paragraph, <strong>not on a strong</strong></p>");
         clean("<P>Allow blank alt attr on<img alt='' src='' /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");
         clean("<P>Allow blank alt attr on<img alt= /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");
         clean("<P>Add alt attr to<img /></p>", "<p>Add alt attr to<img alt='' /></p>");

@@ -186,8 +186,10 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     // check for classes allowed
                     if (this.name == "class") {
                         value =
-                            $.grep(value.split(" "), function(i) {
-                                return $.inArray(i, options.allowedClasses) > -1;
+                            $.grep(value.split(" "), function(c) {
+                                return $.grep(options.allowedClasses, function(a) {
+                                    return a[0] == c && (a.length == 1 || $.inArray(element.tag.name, a[1]) > -1);
+                                }).length>0;
                             })
                             .join(" ");
                         valueQuote = "'";
