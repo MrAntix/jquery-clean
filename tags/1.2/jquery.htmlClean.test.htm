@@ -1,0 +1,121 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>$.htmlClean</title>
+
+    <style type="text/css">
+        html,body{background-color:#fcf9f3}
+        .input,.result{font-family:Monospace}
+        .success{color:#0c0}
+        .failure{color:#c00}
+    </style>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="jquery.htmlClean.js"></script>
+    <script type="text/javascript">
+        $.htmlClean.defaults.allowedClasses = [["test", ["p"]]];
+    
+        function encode(value) {
+            return value
+                .replace(/\&/g, '&amp;')
+                .replace(/\</g, '&lt;')
+                .replace(/\>/g, '&gt;');
+
+        }
+        function clean(input, expected) {
+            document.write("<p class='input'>".concat(encode(input), "</p>"));
+            test_isEqual($.htmlClean(input), expected)
+        }
+        function trim(input, expected) {
+            document.write("<p class='input'>".concat(encode(input), "</p>"));
+            test_isEqual($.htmlClean.trim(input), expected)
+        }
+        function trimStart(input, expected) {
+            document.write("<p class='input'>".concat(encode(input), "</p>"));
+            test_isEqual($.htmlClean.trimStart(input), expected)
+        }
+        function trimEnd(input, expected) {
+            document.write("<p class='input'>".concat(encode(input), "</p>"));
+            test_isEqual($.htmlClean.trimEnd(input), expected)
+        }
+        function test_isEqual(actual, expected) {
+            document.write("<p class='result ".concat(
+                actual == expected ? "success" : "failure",
+                "'>actual&nbsp;&nbsp;: '", encode(actual), "'<br />expected: '", encode(expected), "'</p>"));
+        }
+    </script>
+</head>
+<body>
+    <p><a href="http://code.google.com/p/jquery-clean/">http://code.google.com/p/jquery-clean/</a></p>
+
+    <h2>Clean</h2>
+    <script type="text/javascript">
+        $.htmlClean.defaults.allowedTags = ["p", "em"];
+        clean("<p>testing <i>allowedTags</i> <strong>option</strong> <em>(white list)</em></p>", "<p>testing <em>allowedTags</em> option <em>(white list)</em></p>");
+        $.htmlClean.defaults.allowedTags = [];
+
+        $.htmlClean.defaults.removeTags = ["strong"];
+        clean("<p>testing <i>removeTags</i> <b>option</b> <em>(black list)</em></p>", "<p>testing <em>removeTags</em> option <em>(black list)</em></p>");
+        $.htmlClean.defaults.removeTags = [];
+
+        clean("<p class='test test2'>Allow test css class on a paragraph, <strong class='test'>not on a strong</strong></p>", "<p class='test'>Allow test css class on a paragraph, <strong>not on a strong</strong></p>");
+        clean("<P>Allow blank alt attr on<img alt='' src='' /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");
+        clean("<P>Allow blank alt attr on<img alt= /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");
+        clean("<P>Add alt attr to<img /></p>", "<p>Add alt attr to<img alt='' /></p>");
+        clean("<P>This is<i> inline </i><b>consecutive</b> </p>", "<p>This is <em>inline</em> <strong>consecutive</strong></p>");
+        clean("<P>This is <em>an inline </em> tag<BR>test<br></p>", "<p>This is <em>an inline</em> tag<br />test</p>");
+        clean("<P>This is <em> inline<b>  nested</b> </em> test</p>", "<p>This is <em>inline <strong>nested</strong></em> test</p>");
+        clean("<P>This is <em>inline<b>nested</b> </em>test</p>", "<p>This is <em>inline<strong>nested</strong></em> test</p>");
+        clean("<P>This is <i>inline split<b>nested </i>te</b>st</p>", "<p>This is <em>inline split<strong>nested</strong></em> test</p>");
+
+        clean("<H1 class=\"header\"><P>Nested P Test</H1>", "<h1>Nested P Test</h1>");
+        clean("<p>        Unecessary white space test          </p>", "<p>Unecessary white space test</p>");
+        clean("<p><b>Replace</b> test</p>", "<p><strong>Replace</strong> test</p>");
+        clean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-weight: bold;\">bold</span> test</p>", "<p>Safari style span <strong>bold</strong> test</p>");
+        clean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-style: italic;\">italic</span> test</p>", "<p>Safari style span <em>italic</em> test</p>");
+        
+        clean("<ul>\n<li>Un-closed List Item Test 1\n<li>Un-closed List Item Test 2\n</ul>", "<ul><li>Un-closed List Item Test 1</li><li>Un-closed List Item Test 2</li></ul>");
+
+        clean("<table>    <tr>\n <th>Un-closed Cell & row Test 1\n<td>Un-closed Cell & row Test 2\n</table>", "<table><tr><th>Un-closed Cell & row Test 1</th><td>Un-closed Cell & row Test 2</td></tr></table>");
+        clean("<table>\n<tr>\n <th>  White space in cell test 1 </th><td>White space in cell test 2 </td></tr></table>", "<table><tr><th>White space in cell test 1</th><td>White space in cell test 2</td></tr></table>");
+        clean("<table><tr><th>Next cells empty test</th><td>&nbsp;</td><td></td></tr></table>", "<table><tr><th>Next cells empty test</th><td></td><td></td></tr></table>");
+    </script>    
+
+    <h2>Trim</h2>
+    <script type="text/javascript">
+        trim("  Hello", "Hello");
+        trim("  Hello   ", "Hello");
+
+        trimStart("  Hello", "Hello");
+        trimStart("  Hello   ", "Hello   ");
+
+        trimEnd("  Hello", "  Hello");
+        trimEnd("  Hello   ", "  Hello");
+
+    </script>
+    
+    <h2>Example</h2>
+    <pre id="Input1">$.htmlClean("&lt;H1 class=\"header\"&gt;&lt;P&gt;Nested P Test&lt;/H1&gt;", { format: true })</pre>
+    <textarea id="Output1" cols=80 rows=10></textarea>
+    
+    <script type="text/javascript">
+        $("#Output1").val(
+            $.htmlClean("<H1 class=\"header\"><P>Nested P Test</H1>", { format: true })
+        );
+    </script>
+    
+    <h2>Example</h2>
+    <div id="Input2">
+    &lt;p&gt;
+	Recently this site has changed structure, it's still being updated and pages are not where they used to be. My SEO friend tells me that I need to keep a track on the changes and nicely redirect requests to the new location.
+&lt;/p&gt;
+    </div>
+    <textarea id="Output2" cols=80 rows=10></textarea>
+    
+    <script type="text/javascript">
+        $("#Output2").val(
+            $.htmlClean($("#Input2").text(), { format: false })
+        );
+    </script>
+
+</body>
+</html>
