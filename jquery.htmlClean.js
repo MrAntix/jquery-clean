@@ -3,13 +3,15 @@ HTML Clean for jQuery
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.1.1
+version 1.2.0
 
 $Revision$
 
 requires jQuery http://jquery.com   
 
 Use and distibution http://www.opensource.org/licenses/bsd-license.php
+
+2010-04-02 allowedTags/removeTags added (white/black list) thanks to David Wartian (Dwartian)
 */
 (function($) {
     $.fn.htmlClean = function(options) {
@@ -136,11 +138,13 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
     // defaults
     $.htmlClean.defaults = {
-        bodyOnly: true,
-        removeAttrs: [],
-        allowedClasses: [],
-        format: false,
-        formatIndent: 0,
+        bodyOnly: true,     // only clean the body tag
+        allowedTags: [],    // only allow tags in this array, (white list), contents still rendered
+        removeTags: [],     // remove tags in this array, (black list), contents still rendered
+        removeAttrs: [],    // array of attribute names to remove on all elements in addition to those not in tagAttributes e.g ["width", "height"]
+        allowedClasses: [], // array of [className], [optional array of allowed on elements] e.g. [["class"], ["anotherClass", ["p", "dl"]]]
+        format: false,      // format the result
+        formatIndent: 0,    // format indent to start on
         // tags to replace, and what to replace with, tag name or regex to match the tag and attributes 
         replace: [
             [["b", "big", /span.*?weight:\s*bold/i], "strong"],
@@ -173,7 +177,13 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 }
             }
         }
-        if (!element.isRoot) {
+
+        // don't render if not in allowedTags or in removeTags
+        var renderTag
+            = (options.allowedTags.length == 0 || $.inArray(element.tag.name, options.allowedTags) > -1)
+            && (options.removeTags.length == 0 || $.inArray(element.tag.name, options.removeTags) == -1);
+
+        if (!element.isRoot && renderTag) {
             // render opening tag
             output.push("<");
             output.push(element.tag.name);
@@ -189,7 +199,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                             $.grep(value.split(" "), function(c) {
                                 return $.grep(options.allowedClasses, function(a) {
                                     return a[0] == c && (a.length == 1 || $.inArray(element.tag.name, a[1]) > -1);
-                                }).length>0;
+                                }).length > 0;
                             })
                             .join(" ");
                         valueQuote = "'";
@@ -209,12 +219,12 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
         if (element.tag.isSelfClosing) {
             // self closing 
-            output.push(" />");
+            if(renderTag) output.push(" />");
             empty = false;
         } else if (element.tag.isNonClosing) {
             empty = false;
         } else {
-            if (!element.isRoot) {
+            if (!element.isRoot && renderTag) {
                 // close
                 output.push(">");
             }
@@ -258,7 +268,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 }
             }
 
-            if (!element.isRoot) {
+            if (!element.isRoot && renderTag) {
                 // render the closing tag
                 if (options.format) applyFormat(element, options, output, indent - 1);
                 output.push("</");

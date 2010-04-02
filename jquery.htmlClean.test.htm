@@ -45,9 +45,18 @@
     </script>
 </head>
 <body>
+    <p><a href="http://code.google.com/p/jquery-clean/">http://code.google.com/p/jquery-clean/</a></p>
 
     <h2>Clean</h2>
     <script type="text/javascript">
+        $.htmlClean.defaults.allowedTags = ["p", "em"];
+        clean("<p>testing <i>allowedTags</i> <strong>option</strong> <em>(white list)</em></p>", "<p>testing <em>allowedTags</em> option <em>(white list)</em></p>");
+        $.htmlClean.defaults.allowedTags = [];
+
+        $.htmlClean.defaults.removeTags = ["strong"];
+        clean("<p>testing <i>removeTags</i> <b>option</b> <em>(black list)</em></p>", "<p>testing <em>removeTags</em> option <em>(black list)</em></p>");
+        $.htmlClean.defaults.removeTags = [];
+
         clean("<p class='test test2'>Allow test css class on a paragraph, <strong class='test'>not on a strong</strong></p>", "<p class='test'>Allow test css class on a paragraph, <strong>not on a strong</strong></p>");
         clean("<P>Allow blank alt attr on<img alt='' src='' /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");
         clean("<P>Allow blank alt attr on<img alt= /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");
@@ -69,7 +78,6 @@
         clean("<table>    <tr>\n <th>Un-closed Cell & row Test 1\n<td>Un-closed Cell & row Test 2\n</table>", "<table><tr><th>Un-closed Cell & row Test 1</th><td>Un-closed Cell & row Test 2</td></tr></table>");
         clean("<table>\n<tr>\n <th>  White space in cell test 1 </th><td>White space in cell test 2 </td></tr></table>", "<table><tr><th>White space in cell test 1</th><td>White space in cell test 2</td></tr></table>");
         clean("<table><tr><th>Next cells empty test</th><td>&nbsp;</td><td></td></tr></table>", "<table><tr><th>Next cells empty test</th><td></td><td></td></tr></table>");
-        
     </script>    
 
     <h2>Trim</h2>
