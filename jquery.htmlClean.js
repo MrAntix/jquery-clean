@@ -3,7 +3,7 @@ HTML Clean for jQuery
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.2.0
+version 1.2.1
 
 $Revision$
 
@@ -75,7 +75,6 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 // create a new element
                 var element = new Element(tag);
 
-                if (!tag.toIgnore) {
                     // add attributes
                     if (tag.allowedAttributes != null) {
                         var attrMatch;
@@ -128,7 +127,6 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                             }
                         }
                     }
-                }
             }
         }
 
@@ -138,13 +136,20 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
     // defaults
     $.htmlClean.defaults = {
-        bodyOnly: true,     // only clean the body tag
-        allowedTags: [],    // only allow tags in this array, (white list), contents still rendered
-        removeTags: [],     // remove tags in this array, (black list), contents still rendered
-        removeAttrs: [],    // array of attribute names to remove on all elements in addition to those not in tagAttributes e.g ["width", "height"]
-        allowedClasses: [], // array of [className], [optional array of allowed on elements] e.g. [["class"], ["anotherClass", ["p", "dl"]]]
-        format: false,      // format the result
-        formatIndent: 0,    // format indent to start on
+        // only clean the body tagbody
+        Only: true,
+        // only allow tags in this array, (white list), contents still rendered
+        allowedTags: [],
+        // remove tags in this array, (black list), contents still rendered
+        removeTags: ["basefont", "center", "dir", "font", "frame", "frameset", "iframe", "isindex", "menu", "noframes", "s", "strike", "u"],
+        // array of attribute names to remove on all elements in addition to those not in tagAttributes e.g ["width", "height"]
+        removeAttrs: [],
+        // array of [className], [optional array of allowed on elements] e.g. [["class"], ["anotherClass", ["p", "dl"]]]
+        allowedClasses: [],
+        // format the result
+        format: false,
+        // format indent to start on
+        formatIndent: 0,
         // tags to replace, and what to replace with, tag name or regex to match the tag and attributes 
         replace: [
             [["b", "big", /span.*?weight:\s*bold/i], "strong"],
@@ -343,7 +348,6 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         this.requiredParent = tagRequiredParent[$.inArray(this.name, tagRequiredParent) + 1];
         this.allowEmpty = $.inArray(this.name, tagAllowEmpty) > -1;
 
-        this.toIgnore = $.inArray(this.name, tagIgnore) > -1;
         this.toProtect = $.inArray(this.name, tagProtect) > -1;
 
         this.rawAttributes = rawAttributes;
@@ -391,11 +395,6 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     // checks a char is white space or not
     $.htmlClean.isWhitespace = function(c) { return $.inArray(c, whitespace) != -1; }
 
-    // tags to be ignored, content will still be output
-    var tagIgnore = [
-        "basefont", "center", "dir", "font", "frame", "frameset",
-        "iframe", "isindex", "menu", "noframes",
-        "s", "strike", "u"];
     // tags which are inline
     var tagInline = [
         "a", "abbr", "acronym", "address", "b", "big", "br", "button",
