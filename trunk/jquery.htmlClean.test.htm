@@ -73,6 +73,8 @@
         clean("<p><b>Replace</b> test</p>", "<p><strong>Replace</strong> test</p>");
         clean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-weight: bold;\">bold</span> test</p>", "<p>Safari style span <strong>bold</strong> test</p>");
         clean("<p>Safari style span <span class=\"Apple-style-span\" style=\"font-style: italic;\">italic</span> test</p>", "<p>Safari style span <em>italic</em> test</p>");
+        clean("<p style=\"font-style: italic;\">firefox style p italic test</p>", "<p><em>firefox style p italic test</em></p>");
+        clean("<p style=\"font-style: italic;font-weight: bold;\">firefox style p italic test</p>", "<p><strong><em>firefox style p italic test</em></strong></p>");
         
         clean("<ul>\n<li>Un-closed List Item Test 1\n<li>Un-closed List Item Test 2\n</ul>", "<ul><li>Un-closed List Item Test 1</li><li>Un-closed List Item Test 2</li></ul>");
 
