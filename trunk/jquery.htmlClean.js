@@ -12,6 +12,7 @@ requires jQuery http://jquery.com
 Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
 2010-04-02 allowedTags/removeTags added (white/black list) thanks to David Wartian (Dwartian)
+2010-06-30 replaceStyles added for replacement of bold, italic, super and sub styles on a tag
 */
 (function ($) {
     $.fn.htmlClean = function (options) {
@@ -174,6 +175,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             [["b", "big"], "strong"],
             [["i"], "em"]
         ],
+        // styles to replace with tags, multiple style matches supported, inline tags are replaced by the first match blocks are retained
         replaceStyles: [
             [/font-weight:\s*bold/i, "strong"],
             [/font-style:\s*italic/i, "em"],
