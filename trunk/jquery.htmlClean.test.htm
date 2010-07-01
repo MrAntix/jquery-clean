@@ -49,6 +49,10 @@
 
     <h2>Clean</h2>
     <script type="text/javascript">
+        $.htmlClean.defaults.notRenderedTags = ["span", "em"];
+        clean("<p><span>testing</span> <i>notRenderedtags</i> <span style='font-style: italic'>span</span> or <span style='font-weight: bold'>em</span></p>", "<p>testing notRenderedtags span or <strong>em</strong></p>");
+        $.htmlClean.defaults.notRenderedTags = [];
+
         $.htmlClean.defaults.allowedTags = ["p", "em"];
         clean("<p>testing <i>allowedTags</i> <strong>option</strong> <em>(white list)</em></p>", "<p>testing <em>allowedTags</em> option <em>(white list)</em></p>");
         $.htmlClean.defaults.allowedTags = [];

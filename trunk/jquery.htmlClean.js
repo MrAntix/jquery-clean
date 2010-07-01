@@ -3,7 +3,7 @@ HTML Clean for jQuery
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.2.2
+version 1.2.3
 
 $Revision$
 
@@ -13,6 +13,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
 2010-04-02 allowedTags/removeTags added (white/black list) thanks to David Wartian (Dwartian)
 2010-06-30 replaceStyles added for replacement of bold, italic, super and sub styles on a tag
+2010-07-01 notRenderedTags added, where tags are to be removed but their contents are kept
 */
 (function ($) {
     $.fn.htmlClean = function (options) {
@@ -50,7 +51,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         var lastIndex;
 
         while (tagMatch = tagsRE.exec(html)) {
-            var tag = new Tag(tagMatch[3], tagMatch[1], tagMatch[4]);
+            var tag = new Tag(tagMatch[3], tagMatch[1], tagMatch[4], options);
 
             // add the text
             var text = html.substring(lastIndex, tagMatch.index);
@@ -84,16 +85,19 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     if (attrMatch[1].toLowerCase() == "style"
                         && options.replaceStyles) {
 
-                        var renderParent = !element.tag.isInline;
+                        var renderParent = !tag.isInline;
                         for (var i = 0; i < options.replaceStyles.length; i++) {
                             if (options.replaceStyles[i][0].test(attrMatch[2])) {
 
-                                element.render = renderParent; renderParent = true;
-                                container.children.push(element);
+                                if (!renderParent) {
+                                    tag.render = false;
+                                    renderParent = true;
+                                }
+                                container.children.push(element); // assumes not replaced
                                 stack.push(element);
                                 container = element; // assumes replacement is a container
                                 // create new tag and element
-                                tag = new Tag(options.replaceStyles[i][1], "", "");
+                                tag = new Tag(options.replaceStyles[i][1], "", "", options);
                                 element = new Element(tag);
                             }
                         }
@@ -110,6 +114,29 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     var name = this.toString();
                     if (!element.hasAttribute(name)) element.attributes.push(new Attribute(name, ""));
                 });
+
+                // check for replacements
+                for (var repIndex = 0; repIndex < options.replace.length; repIndex++) {
+                    for (var tagIndex = 0; tagIndex < options.replace[repIndex][0].length; tagIndex++) {
+                        var byName = typeof (options.replace[repIndex][0][tagIndex]) == "string";
+                        if ((byName && options.replace[repIndex][0][tagIndex] == tag.name)
+                                || (!byName && options.replace[repIndex][0][tagIndex].test(tagMatch))) {
+                            // don't render this tag
+                            tag.render = false;
+                            container.children.push(element);
+                            stack.push(element);
+                            container = element;
+
+                            // render new tag, keep attributes
+                            tag = new Tag(options.replace[repIndex][1], tagMatch[1], tagMatch[4], options);
+                            element = new Element(tag);
+                            element.attributes = container.attributes;
+
+                            repIndex = options.replace.length; // break out of both loops
+                            break;
+                        }
+                    }
+                }
 
                 // check container rules
                 var add = true;
@@ -132,7 +159,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     if (tag.toProtect) {
                         // skip to closing tag
                         while (tagMatch2 = tagsRE.exec(html)) {
-                            var tag2 = new Tag(tagMatch2[3], tagMatch2[1], tagMatch2[4]);
+                            var tag2 = new Tag(tagMatch2[3], tagMatch2[1], tagMatch2[4], options);
                             if (tag2.isClosing && tag2.name == tag.name) {
                                 element.children.push(RegExp.leftContext.substring(lastIndex));
                                 lastIndex = tagsRE.lastIndex;
@@ -166,6 +193,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         removeAttrs: [],
         // array of [className], [optional array of allowed on elements] e.g. [["class"], ["anotherClass", ["p", "dl"]]]
         allowedClasses: [],
+        // tags not rendered, contents remain
+        notRenderedTags: [],
         // format the result
         format: false,
         // format indent to start on
@@ -195,22 +224,9 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         var output = [], empty = element.attributes.length == 0, indent;
         var openingTag = this.name.concat(element.tag.rawAttributes == undefined ? "" : element.tag.rawAttributes);
 
-        // check for replacements
-        for (var rep = 0; rep < options.replace.length; rep++) {
-            for (var tag = 0; tag < options.replace[rep][0].length; tag++) {
-                var byName = typeof (options.replace[rep][0][tag]) == "string";
-                if ((byName && options.replace[rep][0][tag] == element.tag.name)
-                        || (!byName && options.replace[rep][0][tag].test(openingTag))) {
-                    element.tag.name = options.replace[rep][1];
-                    rep = options.replace.length;
-                    break;
-                }
-            }
-        }
-
         // don't render if not in allowedTags or in removeTags
         var renderTag
-            = element.render
+            = element.tag.render
                 && (options.allowedTags.length == 0 || $.inArray(element.tag.name, options.allowedTags) > -1)
                 && (options.removeTags.length == 0 || $.inArray(element.tag.name, options.removeTags) == -1);
 
@@ -338,7 +354,6 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         }
         this.attributes = [];
         this.children = [];
-        this.render = true;
 
         this.hasAttribute = function (name) {
             for (var i = 0; i < this.attributes.length; i++) {
@@ -363,7 +378,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     }
 
     // Tag object
-    function Tag(name, close, rawAttributes) {
+    function Tag(name, close, rawAttributes, options) {
         this.name = name.toLowerCase();
 
         this.isSelfClosing = $.inArray(this.name, tagSelfClosing) > -1;
@@ -380,6 +395,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         this.rawAttributes = rawAttributes;
         this.allowedAttributes = tagAttributes[$.inArray(this.name, tagAttributes) + 1];
         this.requiredAttributes = tagAttributesRequired[$.inArray(this.name, tagAttributesRequired) + 1];
+
+        this.render = options && $.inArray(this.name, options.notRenderedTags) == -1;
 
         return this;
     }
