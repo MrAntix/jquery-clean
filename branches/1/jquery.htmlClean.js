@@ -3,7 +3,7 @@ HTML Clean for jQuery
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.2.4
+version 1.2.5
 
 $Revision$
 
@@ -184,7 +184,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     // defaults
     $.htmlClean.defaults = {
         // only clean the body tagbody
-        Only: true,
+        bodyOnly: true,
         // only allow tags in this array, (white list), contents still rendered
         allowedTags: [],
         // remove tags in this array, (black list), contents still rendered
