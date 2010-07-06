@@ -3,7 +3,7 @@ HTML Clean for jQuery
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.2.3
+version 1.2.4
 
 $Revision$
 
@@ -492,6 +492,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             "select", ["class", "disabled", "multiple", "name", "size", "tabindex"],
             "style", ["type"],
             "table", ["class", "summary"],
+            "th", ["class", "colspan", "rowspan"],
+            "td", ["class", "colspan", "rowspan"],
             "textarea", ["accesskey", "class", "cols", "disabled", "name", "readonly", "rows", "tabindex"]
         ];
     var tagAttributesRequired = [[], "img", ["alt"]];
