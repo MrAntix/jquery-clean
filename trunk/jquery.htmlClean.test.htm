@@ -49,6 +49,8 @@
 
     <h2>Clean</h2>
     <script type="text/javascript">
+    	clean("<p align='center'><font>hello</font><p>","<p>hello</p>");
+    	
         clean("<table><tbody><tr><td colspan=2>check colspan</td></tr></tbody></table>", "<table><tbody><tr><td colspan='2'>check colspan</td></tr></tbody></table>");
 
         $.htmlClean.defaults.notRenderedTags = ["span", "em"];
