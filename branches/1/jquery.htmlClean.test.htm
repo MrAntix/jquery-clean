@@ -12,7 +12,6 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script type="text/javascript" src="jquery.htmlClean.js"></script>
     <script type="text/javascript">
-        $.htmlClean.defaults.allowedClasses = [["test", ["p"]]];
     
         function encode(value) {
             return value
@@ -63,7 +62,11 @@
         clean("<p>testing <i>removeTags</i> <b>option</b> <em>(black list)</em></p>", "<p>testing <em>removeTags</em> option <em>(black list)</em></p>");
         $.htmlClean.defaults.removeTags = [];
 
+        clean("<p class='test test2'>Allow all css classes (default), <strong class='test test2'>not on a strong</strong></p>", "<p class='test test2'>Allow all css classes (default), <strong class='test test2'>not on a strong</strong></p>");
+
+        $.htmlClean.defaults.allowedClasses = [["test", ["p"]]];
         clean("<p class='test test2'>Allow test css class on a paragraph, <strong class='test'>not on a strong</strong></p>", "<p class='test'>Allow test css class on a paragraph, <strong>not on a strong</strong></p>");
+
         clean("<P>Allow blank alt attr on<img alt='' src='' /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");
         clean("<P>Allow blank alt attr on<img alt= /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");
         clean("<P>Add quote to alt attr on<img alt=add-quote /></p>", "<p>Add quote to alt attr on<img alt='add-quote' /></p>");

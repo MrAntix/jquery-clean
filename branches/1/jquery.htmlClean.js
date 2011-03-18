@@ -1,9 +1,9 @@
-/*
+﻿/*
 HTML Clean for jQuery   
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.2.5
+version 1.2.6
 
 $Revision$
 
@@ -15,10 +15,10 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 2010-06-30 replaceStyles added for replacement of bold, italic, super and sub styles on a tag
 2010-07-01 notRenderedTags added, where tags are to be removed but their contents are kept
 */
-(function ($) {
-    $.fn.htmlClean = function (options) {
+(function($) {
+    $.fn.htmlClean = function(options) {
         // iterate and html clean each matched element
-        return this.each(function () {
+        return this.each(function() {
             var $this = $(this);
             if (this.value) {
                 this.value = $.htmlClean(this.value, options);
@@ -29,7 +29,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     };
 
     // clean the passed html
-    $.htmlClean = function (html, options) {
+    $.htmlClean = function(html, options) {
         options = $.extend({}, $.htmlClean.defaults, options);
 
         var tagsRE = /<(\/)?(\w+:)?([\w]+)([^>]*)>/gi;
@@ -110,7 +110,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     }
                 }
                 // add required empty ones
-                $.each(tag.requiredAttributes, function () {
+                $.each(tag.requiredAttributes, function() {
                     var name = this.toString();
                     if (!element.hasAttribute(name)) element.attributes.push(new Attribute(name, ""));
                 });
@@ -234,17 +234,18 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             // render opening tag
             output.push("<");
             output.push(element.tag.name);
-            $.each(element.attributes, function () {
+            $.each(element.attributes, function() {
                 if ($.inArray(this.name, options.removeAttrs) == -1) {
                     var m = RegExp(/^(['"]?)(.*?)['"]?$/).exec(this.value);
                     var value = m[2];
                     var valueQuote = m[1] || "'";
 
                     // check for classes allowed
-                    if (this.name == "class") {
+                    if (this.name == "class"
+                            && options.allowedClasses && options.allowedClasses.length > 0) {
                         value =
-                            $.grep(value.split(" "), function (c) {
-                                return $.grep(options.allowedClasses, function (a) {
+                            $.grep(value.split(" "), function(c) {
+                                return $.grep(options.allowedClasses, function(a) {
                                     return a[0] == c && (a.length == 1 || $.inArray(element.tag.name, a[1]) > -1);
                                 }).length > 0;
                             })
@@ -355,14 +356,14 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         this.attributes = [];
         this.children = [];
 
-        this.hasAttribute = function (name) {
+        this.hasAttribute = function(name) {
             for (var i = 0; i < this.attributes.length; i++) {
                 if (this.attributes[i].name == name) return true;
             }
             return false;
         }
 
-        this.childrenToString = function () {
+        this.childrenToString = function() {
             return this.children.join("");
         }
 
@@ -419,25 +420,25 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     }
 
     // trim off white space, doesn't use regex
-    $.htmlClean.trim = function (text) {
+    $.htmlClean.trim = function(text) {
         return $.htmlClean.trimStart($.htmlClean.trimEnd(text));
     }
-    $.htmlClean.trimStart = function (text) {
+    $.htmlClean.trimStart = function(text) {
         return text.substring($.htmlClean.trimStartIndex(text));
     }
-    $.htmlClean.trimStartIndex = function (text) {
+    $.htmlClean.trimStartIndex = function(text) {
         for (var start = 0; start < text.length - 1 && $.htmlClean.isWhitespace(text.charAt(start)); start++);
         return start;
     }
-    $.htmlClean.trimEnd = function (text) {
+    $.htmlClean.trimEnd = function(text) {
         return text.substring(0, $.htmlClean.trimEndIndex(text));
     }
-    $.htmlClean.trimEndIndex = function (text) {
+    $.htmlClean.trimEndIndex = function(text) {
         for (var end = text.length - 1; end >= 0 && $.htmlClean.isWhitespace(text.charAt(end)); end--);
         return end + 1;
     }
     // checks a char is white space or not
-    $.htmlClean.isWhitespace = function (c) { return $.inArray(c, whitespace) != -1; }
+    $.htmlClean.isWhitespace = function(c) { return $.inArray(c, whitespace) != -1; }
 
     // tags which are inline
     var tagInline = [
