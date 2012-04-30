@@ -14,6 +14,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 2010-04-02 allowedTags/removeTags added (white/black list) thanks to David Wartian (Dwartian)
 2010-06-30 replaceStyles added for replacement of bold, italic, super and sub styles on a tag
 2010-07-01 notRenderedTags added, where tags are to be removed but their contents are kept
+2012-04-30 allowedAttributes added, an array of attributed allowed on the elements
 */
 (function ($) {
     $.fn.htmlClean = function (options) {
@@ -191,8 +192,10 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         removeTags: ["basefont", "center", "dir", "font", "frame", "frameset", "iframe", "isindex", "menu", "noframes", "s", "strike", "u"],
         // array of attribute names to remove on all elements in addition to those not in tagAttributes e.g ["width", "height"]
         removeAttrs: [],
-        // array of [className], [optional array of allowed on elements] e.g. [["class"], ["anotherClass", ["p", "dl"]]]
+        // array of [className], [optional array of allowed on elements] e.g. [["aClass"], ["anotherClass", ["p", "dl"]]]
         allowedClasses: [],
+        // array of [attributeName], [optional array of allowed on elements] e.g. [["id"], ["style", ["p", "dl"]]] // allow all elements to have id and allow style on 'p' and 'dl'
+        allowedAttributes: [],
         // tags not rendered, contents remain
         notRenderedTags: [],
         // format the result
@@ -393,8 +396,30 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         this.toProtect = $.inArray(this.name, tagProtect) > -1;
 
         this.rawAttributes = rawAttributes;
-        this.allowedAttributes = tagAttributes[$.inArray(this.name, tagAttributes) + 1];
         this.requiredAttributes = tagAttributesRequired[$.inArray(this.name, tagAttributesRequired) + 1];
+
+        if (options) {
+            if (!options.tagAttributesCache) options.tagAttributesCache = [];
+            if ($.inArray(this.name, options.tagAttributesCache) == -1) {
+                var cacheItem = tagAttributes[$.inArray(this.name, options.tagAttributesCache) + 1].slice(0);
+
+                // add extra ones from options
+                for (var i = 0; i < options.allowedAttributes.length; i++) {
+                    var attrName = options.allowedAttributes[i][0];
+                    if ((
+                            options.allowedAttributes[i].length == 1
+                            || $.inArray(this.name, options.allowedAttributes[i][1]) > -1
+                            ) && $.inArray(attrName, cacheItem) == -1) {
+                        cacheItem.push(attrName);
+                    }
+                }
+
+                options.tagAttributesCache.push(this.name);
+                options.tagAttributesCache.push(cacheItem);
+            }
+
+            this.allowedAttributes = options.tagAttributesCache[$.inArray(this.name, options.tagAttributesCache) + 1];
+        }
 
         this.render = options && $.inArray(this.name, options.notRenderedTags) == -1;
 
