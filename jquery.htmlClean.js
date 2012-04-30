@@ -178,7 +178,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         }
 
         // render doc
-        return render(root, options).join("");
+        return $.htmlClean.trim(render(root, options).join(""));
     }
 
     // defaults
