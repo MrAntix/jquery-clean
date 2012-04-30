@@ -445,7 +445,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         "caption", "cite", "code", "del", "em", "font",
         "hr", "i", "input", "img", "ins", "label", "legend", "map", "q",
         "samp", "select", "small", "span", "strong", "sub", "sup",
-        "tt", "var"];
+        "tt", "u", "var"];
     var tagDisallowNest = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "th", "td"];
     var tagAllowEmpty = ["th", "td"];
     var tagRequiredParent = [
@@ -483,7 +483,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             "label", ["accesskey", "class", "for"],
             "legend", ["accesskey", "class"],
             "link", ["href", "rel", "type"],
-            "meta", ["content", "http-equiv", "name", "scheme"],
+            "meta", ["content", "http-equiv", "name", "scheme", "charset"],
             "map", ["name"],
             "optgroup", ["class", "disabled", "label"],
             "option", ["class", "disabled", "label", "selected", "value"],
