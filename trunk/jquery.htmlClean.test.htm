@@ -49,6 +49,30 @@
 
     <h2>Clean</h2>
     <script type="text/javascript">
+        clean(
+            "<div id='Utter' frog='chicken'>allows new attribute</div>",
+            "<div id='Utter'>allows new attribute</div>",
+            {
+                allowedAttributes: [["id"]]
+            });
+
+        clean(
+            "<div id='Utter' frog='chicken'><span id='Sau'>allows new attribute on specific tag</span></div>",
+            "<div><span id='Sau'>allows new attribute on specific tag</span></div>",
+            {
+                allowedAttributes: [
+                    ["id", ["span"]]
+                ]
+            });
+
+        clean(
+            "<div id='Utter' class='bird' frog='chicken'>retains old attributes allowed</div>",
+            "<div id='Utter' class='bird'>retains old attributes allowed</div>",
+            {
+                allowedAttributes: [["id"]],
+                allowedClasses: [["bird"]]
+            });
+
     	clean("<p align='center'><font>hello</font><p>","<p>hello</p>");
     	
         clean("<table><tbody><tr><td colspan=2>check colspan</td></tr></tbody></table>", "<table><tbody><tr><td colspan='2'>check colspan</td></tr></tbody></table>");
