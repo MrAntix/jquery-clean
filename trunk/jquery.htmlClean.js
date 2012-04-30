@@ -179,7 +179,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
         // render doc
         return $.htmlClean.trim(render(root, options).join(""));
-    }
+    };
 
     // defaults
     $.htmlClean.defaults = {
@@ -211,7 +211,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             [/vertical-align:\s*super/i, "sup"],
             [/vertical-align:\s*sub/i, "sub"]
         ]
-    }
+    };
 
     function applyFormat(element, options, output, indent) {
         if (!element.tag.isInline && output.length > 0) {
@@ -360,11 +360,11 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 if (this.attributes[i].name == name) return true;
             }
             return false;
-        }
+        };
 
         this.childrenToString = function () {
             return this.children.join("");
-        }
+        };
 
         return this;
     }
@@ -443,23 +443,23 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     // trim off white space, doesn't use regex
     $.htmlClean.trim = function (text) {
         return $.htmlClean.trimStart($.htmlClean.trimEnd(text));
-    }
+    };
     $.htmlClean.trimStart = function (text) {
         return text.substring($.htmlClean.trimStartIndex(text));
-    }
+    };
     $.htmlClean.trimStartIndex = function (text) {
         for (var start = 0; start < text.length - 1 && $.htmlClean.isWhitespace(text.charAt(start)); start++);
         return start;
-    }
+    };
     $.htmlClean.trimEnd = function (text) {
         return text.substring(0, $.htmlClean.trimEndIndex(text));
-    }
+    };
     $.htmlClean.trimEndIndex = function (text) {
         for (var end = text.length - 1; end >= 0 && $.htmlClean.isWhitespace(text.charAt(end)); end--);
         return end + 1;
-    }
+    };
     // checks a char is white space or not
-    $.htmlClean.isWhitespace = function (c) { return $.inArray(c, whitespace) != -1; }
+    $.htmlClean.isWhitespace = function (c) { return $.inArray(c, whitespace) != -1; };
 
     // tags which are inline
     var tagInline = [
