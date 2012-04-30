@@ -21,9 +21,9 @@
                 .replace(/\>/g, '&gt;');
 
         }
-        function clean(input, expected) {
+        function clean(input, expected, options) {
             document.write("<p class='input'>".concat(encode(input), "</p>"));
-            test_isEqual($.htmlClean(input), expected)
+            test_isEqual($.htmlClean(input, options), expected)
         }
         function trim(input, expected) {
             document.write("<p class='input'>".concat(encode(input), "</p>"));

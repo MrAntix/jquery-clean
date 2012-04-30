@@ -401,7 +401,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         if (options) {
             if (!options.tagAttributesCache) options.tagAttributesCache = [];
             if ($.inArray(this.name, options.tagAttributesCache) == -1) {
-                var cacheItem = tagAttributes[$.inArray(this.name, options.tagAttributesCache) + 1].slice(0);
+                var cacheItem = tagAttributes[$.inArray(this.name, tagAttributes) + 1].slice(0);
 
                 // add extra ones from options
                 for (var i = 0; i < options.allowedAttributes.length; i++) {
