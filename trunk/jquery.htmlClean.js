@@ -3,7 +3,7 @@ HTML Clean for jQuery
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.2.5
+version 1.3.0
 
 $Revision$
 
@@ -13,7 +13,6 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
 2010-04-02 allowedTags/removeTags added (white/black list) thanks to David Wartian (Dwartian)
 2010-06-30 replaceStyles added for replacement of bold, italic, super and sub styles on a tag
-2010-07-01 notRenderedTags added, where tags are to be removed but their contents are kept
 2012-04-30 allowedAttributes added, an array of attributed allowed on the elements
 */
 (function ($) {
@@ -190,14 +189,12 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         allowedTags: [],
         // remove tags in this array, (black list), contents still rendered
         removeTags: ["basefont", "center", "dir", "font", "frame", "frameset", "iframe", "isindex", "menu", "noframes", "s", "strike", "u"],
+        // array of [attributeName], [optional array of allowed on elements] e.g. [["id"], ["style", ["p", "dl"]]] // allow all elements to have id and allow style on 'p' and 'dl'
+        allowedAttributes: [],
         // array of attribute names to remove on all elements in addition to those not in tagAttributes e.g ["width", "height"]
         removeAttrs: [],
         // array of [className], [optional array of allowed on elements] e.g. [["aClass"], ["anotherClass", ["p", "dl"]]]
         allowedClasses: [],
-        // array of [attributeName], [optional array of allowed on elements] e.g. [["id"], ["style", ["p", "dl"]]] // allow all elements to have id and allow style on 'p' and 'dl'
-        allowedAttributes: [],
-        // tags not rendered, contents remain
-        notRenderedTags: [],
         // format the result
         format: false,
         // format indent to start on
@@ -421,7 +418,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             this.allowedAttributes = options.tagAttributesCache[$.inArray(this.name, options.tagAttributesCache) + 1];
         }
 
-        this.render = options && $.inArray(this.name, options.notRenderedTags) == -1;
+        this.render = true;
 
         return this;
     }
