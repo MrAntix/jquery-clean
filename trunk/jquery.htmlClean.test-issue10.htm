@@ -70,6 +70,25 @@
                 allowedAttributes: [["id"]],
                 allowedClasses: [["bird"]]
             });
+
+        clean(
+            "<span style='Utter'>removes attributes not allowed</span>",
+            "<span>removes attributes not allowed</span>",
+            {
+            });
+
+        clean(
+            "<span style='Utter'>retains attributes allowed</span>",
+            "<span style='Utter'>retains attributes allowed</span>",
+            {
+                allowedAttributes: [["style"]]
+            });
+        clean(
+            "<div style='Utter'><span style='Utter'>retains attributes allowed</span></div>",
+            "<div><span style='Utter'>retains attributes allowed</span></div>",
+            {
+                allowedAttributes: [["style",["span"]]]
+            });
     </script>
 
 </body>
