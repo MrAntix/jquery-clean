@@ -33,7 +33,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         options = $.extend({}, $.htmlClean.defaults, options);
 
         var tagsRE = /<(\/)?(\w+:)?([\w]+)([^>]*)>/gi;
-        var attrsRE = /(\w+)=(".*?"|'.*?'|[^\s>]*)/gi;
+        var attrsRE = /([\w\-]+)=(".*?"|'.*?'|[^\s>]*)/gi;
 
         var tagMatch;
         var root = new Element();

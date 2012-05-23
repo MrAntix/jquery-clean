@@ -50,6 +50,13 @@
     <h2>Clean</h2>
     <script type="text/javascript">
         clean(
+            "<div data-image=\"hello\">hiya</div>",
+            "<div data-image=\"hello\">hiya</div>",
+            {
+                allowedAttributes: [["data-image"]]
+            });
+
+        clean(
             "<div id='Utter' frog='chicken'>allows new attribute</div>",
             "<div id='Utter'>allows new attribute</div>",
             {
