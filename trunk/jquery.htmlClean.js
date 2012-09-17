@@ -425,11 +425,15 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
     function startsWithWhitespace(item) {
         while (isElement(item) && item.children.length > 0) { item = item.children[0] }
-        return isText(item) && item.length > 0 && $.htmlClean.isWhitespace(item.charAt(0));
+        if (!isText(item)) return false;
+        var text = textClean(item);
+        return text.length > 0 && $.htmlClean.isWhitespace(text.charAt(0));
     }
     function endsWithWhitespace(item) {
         while (isElement(item) && item.children.length > 0) { item = item.children[item.children.length - 1] }
-        return isText(item) && item.length > 0 && $.htmlClean.isWhitespace(item.charAt(item.length - 1));
+        if (!isText(item)) return false;
+        var text = textClean(item);
+        return text.length > 0 && $.htmlClean.isWhitespace(text.charAt(text.length - 1));
     }
     function isText(item) { return item.constructor == String; }
     function isInline(item) { return isText(item) || item.tag.isInline; }
