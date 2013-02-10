@@ -1,0 +1,94 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>$.htmlClean</title>
+
+    <style type="text/css">
+        html,body{background-color:#fcf9f3}
+        .input,.result{font-family:Monospace}
+        .success{color:#0c0}
+        .failure{color:#c00}
+    </style>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="jquery.htmlClean.js"></script>
+    <script type="text/javascript">
+            function encode(value) {
+                return value
+                .replace(/\&/g, '&amp;')
+                .replace(/\</g, '&lt;')
+                .replace(/\>/g, '&gt;');
+
+            }
+            function clean(input, expected, options) {
+                document.write("<p class='input'>".concat(encode(input), "</p>"));
+                test_isEqual($.htmlClean(input, options), expected)
+            }
+            function trim(input, expected, options) {
+                document.write("<p class='input'>".concat(encode(input), "</p>"));
+                test_isEqual($.htmlClean.trim(input, options), expected)
+            }
+            function trimStart(input, expected, options) {
+                document.write("<p class='input'>".concat(encode(input), "</p>"));
+                test_isEqual($.htmlClean.trimStart(input, options), expected)
+            }
+            function trimEnd(input, expected, options) {
+                document.write("<p class='input'>".concat(encode(input), "</p>"));
+                test_isEqual($.htmlClean.trimEnd(input, options), expected)
+            }
+            function test_isEqual(actual, expected) {
+                document.write("<p class='result ".concat(
+                actual == expected ? "success" : "failure",
+                "'>actual&nbsp;&nbsp;: '", encode(actual), "'<br />expected: '", encode(expected), "'</p>"));
+            }
+            function note(text) {
+                document.write("<p><em>".concat(text, "</em></p>"));
+            }
+    </script>
+</head>
+<body>
+    <p><a href="http://code.google.com/p/jquery-clean/">http://code.google.com/p/jquery-clean/</a></p>
+
+    <h2>Clean</h2>
+    <script type="text/javascript">
+        clean(
+            "<div class=\"foo\">bar</div>",
+            "<div class=\"foo\">bar</div>",
+            {
+                allowedAttributes: [['class']], allowedClasses: ["foo"], format: true
+            });
+
+        note("specify tag");
+        clean(
+            "<div class=\"foo\">bar</div>",
+            "<div class=\"foo\">bar</div>",
+            {
+                allowedAttributes: [['class', ['div']]], allowedClasses: ["foo"], format: true
+            });
+
+        note("no format");
+        clean(
+            "<div class=\"foo\">bar</div>",
+            "<div class=\"foo\">bar</div>",
+            {
+                allowedAttributes: [['class']], allowedClasses: ["foo"], format: false
+            });
+
+        note("no specified classes");
+        clean(
+            "<div class=\"foo\">bar</div>",
+            "<div class=\"foo\">bar</div>",
+            {
+                allowedAttributes: [['class']], format: true
+            });
+
+        note("not classes");
+        clean(
+            "<div x=\"foo\">bar</div>",
+            "<div x=\"foo\">\n\tbar\n</div>",
+            {
+                allowedAttributes: [['x']], allowedClasses: ["foo"], format: true
+            });
+    </script>
+
+</body>
+</html>
