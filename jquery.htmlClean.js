@@ -3,7 +3,7 @@ HTML Clean for jQuery
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.3.0
+version 1.3.1
 
 $Revision$
 
@@ -240,16 +240,16 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     var value = m[2];
                     var valueQuote = m[1] || "'";
 
-                    // check for classes allowed
-                    if (this.name == "class") {
+                    // check for classes allowed                    
+                    if (this.name == "class" && options.allowedClasses.length>0) {
                         value =
                             $.grep(value.split(" "), function (c) {
                                 return $.grep(options.allowedClasses, function (a) {
-                                    return a[0] == c && (a.length == 1 || $.inArray(element.tag.name, a[1]) > -1);
+                                    return a == c
+                                        || (a[0] == c && (a.length == 1 || $.inArray(element.tag.name, a[1]) > -1));
                                 }).length > 0;
                             })
                             .join(" ");
-                        valueQuote = "'";
                     }
 
                     if (value != null && (value.length > 0 || $.inArray(this.name, element.tag.requiredAttributes) > -1)) {

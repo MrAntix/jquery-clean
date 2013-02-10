@@ -53,20 +53,20 @@
         note("reported: allowedAttributes: [['class']], allowedClasses: [\"foo\"], format: true");
         clean(
             "<div class=\"foo\">bar</div>",
-            "<div class=\"foo\">bar</div>",
+            "<div class=\"foo\">\n\tbar\n</div>",
             {
                 allowedAttributes: [['class']], allowedClasses: ["foo"], format: true
             });
 
-        note("specify tag: allowedAttributes: [['class', ['div']]], allowedClasses: [\"foo\"], format: true");
+        note("1. specify tag: allowedAttributes: [['class', ['div']]], allowedClasses: [\"foo\"], format: true");
         clean(
             "<div class=\"foo\">bar</div>",
-            "<div class=\"foo\">bar</div>",
+            "<div class=\"foo\">\n\tbar\n</div>",
             {
                 allowedAttributes: [['class', ['div']]], allowedClasses: ["foo"], format: true
             });
 
-        note("no format: allowedAttributes: [['class']], allowedClasses: [\"foo\"], format: false");
+        note("2. no format: allowedAttributes: [['class']], allowedClasses: [\"foo\"], format: false");
         clean(
             "<div class=\"foo\">bar</div>",
             "<div class=\"foo\">bar</div>",
@@ -74,20 +74,36 @@
                 allowedAttributes: [['class']], allowedClasses: ["foo"], format: false
             });
 
-            note("no specified classes: allowedAttributes: [['class']], format: true");
+        note("3. no specified classes: allowedAttributes: [['class']], format: true");
         clean(
             "<div class=\"foo\">bar</div>",
-            "<div class=\"foo\">bar</div>",
+            "<div class=\"foo\">\n\tbar\n</div>",
             {
                 allowedAttributes: [['class']], format: true
             });
 
-        note("not classes: allowedAttributes: [['x']], allowedClasses: [\"foo\"], format: true");
+        note("4. only allowedClasses: allowedClasses: [\"foo\"], format: true");
+        clean(
+            "<div class=\"foo\">bar</div>",
+            "<div class=\"foo\">\n\tbar\n</div>",
+            {
+                allowedClasses: ["foo"], format: true
+            });
+
+        note("5. not classes: allowedAttributes: [['x']], allowedClasses: [\"foo\"], format: true");
         clean(
             "<div x=\"foo\">bar</div>",
             "<div x=\"foo\">\n\tbar\n</div>",
             {
                 allowedAttributes: [['x']], allowedClasses: ["foo"], format: true
+            });
+
+        note("6. classes in nested format: allowedClasses: [[\"foo\"]], format: true");
+        clean(
+            "<div class=\"foo\">bar</div>",
+            "<div class=\"foo\">\n\tbar\n</div>",
+            {
+                allowedClasses: ["foo"], format: true
             });
     </script>
 
