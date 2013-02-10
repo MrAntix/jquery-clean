@@ -50,6 +50,7 @@
 
     <h2>Clean</h2>
     <script type="text/javascript">
+        note("reported: allowedAttributes: [['class']], allowedClasses: [\"foo\"], format: true");
         clean(
             "<div class=\"foo\">bar</div>",
             "<div class=\"foo\">bar</div>",
@@ -57,7 +58,7 @@
                 allowedAttributes: [['class']], allowedClasses: ["foo"], format: true
             });
 
-        note("specify tag");
+        note("specify tag: allowedAttributes: [['class', ['div']]], allowedClasses: [\"foo\"], format: true");
         clean(
             "<div class=\"foo\">bar</div>",
             "<div class=\"foo\">bar</div>",
@@ -65,7 +66,7 @@
                 allowedAttributes: [['class', ['div']]], allowedClasses: ["foo"], format: true
             });
 
-        note("no format");
+        note("no format: allowedAttributes: [['class']], allowedClasses: [\"foo\"], format: false");
         clean(
             "<div class=\"foo\">bar</div>",
             "<div class=\"foo\">bar</div>",
@@ -73,7 +74,7 @@
                 allowedAttributes: [['class']], allowedClasses: ["foo"], format: false
             });
 
-        note("no specified classes");
+            note("no specified classes: allowedAttributes: [['class']], format: true");
         clean(
             "<div class=\"foo\">bar</div>",
             "<div class=\"foo\">bar</div>",
@@ -81,7 +82,7 @@
                 allowedAttributes: [['class']], format: true
             });
 
-        note("not classes");
+        note("not classes: allowedAttributes: [['x']], allowedClasses: [\"foo\"], format: true");
         clean(
             "<div x=\"foo\">bar</div>",
             "<div x=\"foo\">\n\tbar\n</div>",
