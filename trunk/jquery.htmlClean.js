@@ -15,6 +15,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 2010-06-30 replaceStyles added for replacement of bold, italic, super and sub styles on a tag
 2012-04-30 allowedAttributes added, an array of attributed allowed on the elements
 2013-02-25 now will push non-inline elements up the stack if nested in an inline element
+2013-02-25 comment element support added, removed by default, see AllowComments in options
 */
 (function ($) {
     $.fn.htmlClean = function (options) {
@@ -33,7 +34,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     $.htmlClean = function (html, options) {
         options = $.extend({}, $.htmlClean.defaults, options);
 
-        var tagsRE = /<(\/)?(\w+:)?([\w]+)([^>]*)>/gi;
+        var tagsRE = /(<(\/)?(\w+:)?([\w]+)([^>]*)>)|<!--(.*?--)>/gi;
         var attrsRE = /([\w\-]+)=(".*?"|'.*?'|[^\s>]*)/gi;
 
         var tagMatch;
@@ -52,7 +53,9 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         var lastIndex;
 
         while (tagMatch = tagsRE.exec(html)) {
-            var tag = new Tag(tagMatch[3], tagMatch[1], tagMatch[4], options);
+            var tag = tagMatch[6]
+                ? new Tag("--", null, tagMatch[6], options)
+                : new Tag(tagMatch[4], tagMatch[2], tagMatch[5], options);
 
             // add the text
             var text = html.substring(lastIndex, tagMatch.index);
@@ -206,7 +209,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             [/font-style:\s*italic/i, "em"],
             [/vertical-align:\s*super/i, "sup"],
             [/vertical-align:\s*sub/i, "sub"]
-        ]
+        ],
+        allowComments: false
     };
 
     function applyFormat(element, options, output, indent) {
@@ -218,27 +222,39 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
     function render(element, options) {
         var output = [], empty = element.attributes.length == 0, indent;
-        var openingTag = this.name.concat(element.tag.rawAttributes == undefined ? "" : element.tag.rawAttributes);
 
-        // don't render if not in allowedTags or in removeTags
-        var renderTag
+        if (element.tag.isComment) {
+            if (options.allowComments) {
+                output.push("<!--");
+                output.push(element.tag.rawAttributes);
+                output.push(">");
+
+                if (options.format) applyFormat(element, options, output, indent - 1);
+            }
+        } else {
+
+            var openingTag = this.name.concat(element.tag.rawAttributes == undefined ? "" : element.tag.rawAttributes);
+
+            // don't render if not in allowedTags or in removeTags
+            var renderTag
             = element.tag.render
                 && (options.allowedTags.length == 0 || $.inArray(element.tag.name, options.allowedTags) > -1)
                 && (options.removeTags.length == 0 || $.inArray(element.tag.name, options.removeTags) == -1);
 
-        if (!element.isRoot && renderTag) {
-            // render opening tag
-            output.push("<");
-            output.push(element.tag.name);
-            $.each(element.attributes, function () {
-                if ($.inArray(this.name, options.removeAttrs) == -1) {
-                    var m = RegExp(/^(['"]?)(.*?)['"]?$/).exec(this.value);
-                    var value = m[2];
-                    var valueQuote = m[1] || "'";
+            if (!element.isRoot && renderTag) {
 
-                    // check for classes allowed                    
-                    if (this.name == "class" && options.allowedClasses.length > 0) {
-                        value =
+                // render opening tag
+                output.push("<");
+                output.push(element.tag.name);
+                $.each(element.attributes, function () {
+                    if ($.inArray(this.name, options.removeAttrs) == -1) {
+                        var m = RegExp(/^(['"]?)(.*?)['"]?$/).exec(this.value);
+                        var value = m[2];
+                        var valueQuote = m[1] || "'";
+
+                        // check for classes allowed                    
+                        if (this.name == "class" && options.allowedClasses.length > 0) {
+                            value =
                             $.grep(value.split(" "), function (c) {
                                 return $.grep(options.allowedClasses, function (a) {
                                     return a == c
@@ -246,82 +262,83 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                                 }).length > 0;
                             })
                             .join(" ");
-                    }
+                        }
 
-                    if (value != null && (value.length > 0 || $.inArray(this.name, element.tag.requiredAttributes) > -1)) {
-                        output.push(" ");
-                        output.push(this.name);
-                        output.push("=");
-                        output.push(valueQuote);
-                        output.push(value);
-                        output.push(valueQuote);
+                        if (value != null && (value.length > 0 || $.inArray(this.name, element.tag.requiredAttributes) > -1)) {
+                            output.push(" ");
+                            output.push(this.name);
+                            output.push("=");
+                            output.push(valueQuote);
+                            output.push(value);
+                            output.push(valueQuote);
+                        }
                     }
-                }
-            });
-        }
-
-        if (element.tag.isSelfClosing) {
-            // self closing 
-            if (renderTag) output.push(" />");
-            empty = false;
-        } else if (element.tag.isNonClosing) {
-            empty = false;
-        } else {
-            if (!element.isRoot && renderTag) {
-                // close
-                output.push(">");
+                });
             }
 
-            var indent = options.formatIndent++;
-
-            // render children
-            if (element.tag.toProtect) {
-                var outputChildren = $.htmlClean.trim(element.children.join("")).replace(/<br>/ig, "\n");
-                output.push(outputChildren);
-                empty = outputChildren.length == 0;
+            if (element.tag.isSelfClosing) {
+                // self closing 
+                if (renderTag) output.push(" />");
+                empty = false;
+            } else if (element.tag.isNonClosing) {
+                empty = false;
             } else {
-                var outputChildren = [];
-                for (var i = 0; i < element.children.length; i++) {
-                    var child = element.children[i];
-                    var text = $.htmlClean.trim(textClean(isText(child) ? child : child.childrenToString()));
-                    if (isInline(child)) {
-                        if (i > 0 && text.length > 0
+                if (!element.isRoot && renderTag) {
+                    // close
+                    output.push(">");
+                }
+
+                var indent = options.formatIndent++;
+
+                // render children
+                if (element.tag.toProtect) {
+                    var outputChildren = $.htmlClean.trim(element.children.join("")).replace(/<br>/ig, "\n");
+                    output.push(outputChildren);
+                    empty = outputChildren.length == 0;
+                } else {
+                    var outputChildren = [];
+                    for (var i = 0; i < element.children.length; i++) {
+                        var child = element.children[i];
+                        var text = $.htmlClean.trim(textClean(isText(child) ? child : child.childrenToString()));
+                        if (isInline(child)) {
+                            if (i > 0 && text.length > 0
                         && (startsWithWhitespace(child) || endsWithWhitespace(element.children[i - 1]))) {
-                            outputChildren.push(" ");
+                                outputChildren.push(" ");
+                            }
+                        }
+                        if (isText(child)) {
+                            if (text.length > 0) {
+                                outputChildren.push(text);
+                            }
+                        } else {
+                            // don't allow a break to be the last child
+                            if (i != element.children.length - 1 || child.tag.name != "br") {
+                                if (options.format) applyFormat(child, options, outputChildren, indent);
+                                outputChildren = outputChildren.concat(render(child, options));
+                            }
                         }
                     }
-                    if (isText(child)) {
-                        if (text.length > 0) {
-                            outputChildren.push(text);
-                        }
-                    } else {
-                        // don't allow a break to be the last child
-                        if (i != element.children.length - 1 || child.tag.name != "br") {
-                            if (options.format) applyFormat(child, options, outputChildren, indent);
-                            outputChildren = outputChildren.concat(render(child, options));
-                        }
+                    options.formatIndent--;
+
+                    if (outputChildren.length > 0) {
+                        if (options.format && outputChildren[0] != "\n") applyFormat(element, options, output, indent);
+                        output = output.concat(outputChildren);
+                        empty = false;
                     }
                 }
-                options.formatIndent--;
 
-                if (outputChildren.length > 0) {
-                    if (options.format && outputChildren[0] != "\n") applyFormat(element, options, output, indent);
-                    output = output.concat(outputChildren);
-                    empty = false;
+                if (!element.isRoot && renderTag) {
+                    // render the closing tag
+                    if (options.format) applyFormat(element, options, output, indent - 1);
+                    output.push("</");
+                    output.push(element.tag.name);
+                    output.push(">");
                 }
             }
 
-            if (!element.isRoot && renderTag) {
-                // render the closing tag
-                if (options.format) applyFormat(element, options, output, indent - 1);
-                output.push("</");
-                output.push(element.tag.name);
-                output.push(">");
-            }
+            // check for empty tags
+            if (!element.tag.allowEmpty && empty) { return []; }
         }
-
-        // check for empty tags
-        if (!element.tag.allowEmpty && empty) { return []; }
 
         return output;
     }
@@ -397,17 +414,22 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         this.render = true;
 
         this.init = function () {
-            this.isSelfClosing = $.inArray(this.name, tagSelfClosing) > -1;
-            this.isNonClosing = $.inArray(this.name, tagNonClosing) > -1;
-            this.isClosing = (close != undefined && close.length > 0);
+            if (this.name == "--") {
+                this.isComment = true;
+                this.isSelfClosing = true;
+            } else {
+                this.isComment = false;
+                this.isSelfClosing = $.inArray(this.name, tagSelfClosing) > -1;
+                this.isNonClosing = $.inArray(this.name, tagNonClosing) > -1;
+                this.isClosing = (close != undefined && close.length > 0);
 
-            this.isInline = $.inArray(this.name, tagInline) > -1;
-            this.disallowNest = $.inArray(this.name, tagDisallowNest) > -1;
-            this.requiredParent = tagRequiredParent[$.inArray(this.name, tagRequiredParent) + 1];
-            this.allowEmpty = $.inArray(this.name, tagAllowEmpty) > -1;
+                this.isInline = $.inArray(this.name, tagInline) > -1;
+                this.disallowNest = $.inArray(this.name, tagDisallowNest) > -1;
+                this.requiredParent = tagRequiredParent[$.inArray(this.name, tagRequiredParent) + 1];
+                this.allowEmpty = $.inArray(this.name, tagAllowEmpty) > -1;
 
-            this.toProtect = $.inArray(this.name, tagProtect) > -1;
-
+                this.toProtect = $.inArray(this.name, tagProtect) > -1;
+            }
             this.rawAttributes = rawAttributes;
             this.requiredAttributes = tagAttributesRequired[$.inArray(this.name, tagAttributesRequired) + 1];
 
