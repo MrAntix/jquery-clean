@@ -53,7 +53,15 @@
         note("reported: $.htmlClean('<select><option value=\"foo\">bar</option></select>', {format: true});");
         clean(
             "<select><option value=\"foo\">bar</option></select>",
-            "",
+            "<select><option value=\"foo\">bar</option></select>",
+            {
+                format: true
+            });
+
+        note("1. format=false: $.htmlClean('<select><option value=\"foo\">bar</option></select>', {format: false});");
+            clean(
+            "<select><option value=\"foo\">bar</option></select>",
+            "<select><option value=\"foo\">bar</option></select>",
             {
                 format: true
             });
