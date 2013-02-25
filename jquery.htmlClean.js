@@ -544,6 +544,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             "td", ["class", "colspan", "rowspan"],
             "textarea", ["accesskey", "class", "cols", "disabled", "name", "readonly", "rows", "tabindex"],
             "param", ["name", "value"],
+            "embed", ["height", "src", "type", "width"]
         ];
     var tagAttributesRequired = [[], "img", ["alt"]];
     // white space chars
