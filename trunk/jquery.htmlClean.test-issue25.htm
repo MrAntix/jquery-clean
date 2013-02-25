@@ -41,7 +41,7 @@
                 "'>actual&nbsp;&nbsp;: '", encode(actual), "'<br />expected: '", encode(expected), "'</p>"));
             }
             function note(text) {
-                document.write("<p><em>".concat(text, "</em></p>"));
+                document.write("<p><em>".concat(encode(text), "</em></p>"));
             }
     </script>
 </head>
