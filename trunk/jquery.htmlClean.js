@@ -14,6 +14,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 2010-04-02 allowedTags/removeTags added (white/black list) thanks to David Wartian (Dwartian)
 2010-06-30 replaceStyles added for replacement of bold, italic, super and sub styles on a tag
 2012-04-30 allowedAttributes added, an array of attributed allowed on the elements
+2013-02-25 now will push non-inline elements up the stack if nested in an inline element
 */
 (function ($) {
     $.fn.htmlClean = function (options) {
