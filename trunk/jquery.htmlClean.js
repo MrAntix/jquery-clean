@@ -491,7 +491,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         ];
     var tagProtect = ["script", "style", "pre", "code"];
     // tags which self close e.g. <br />
-    var tagSelfClosing = ["br", "hr", "img", "link", "meta", "param"];
+    var tagSelfClosing = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"];
     // tags which do not close
     var tagNonClosing = ["!doctype", "?xml"];
     // attributes allowed on tags
