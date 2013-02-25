@@ -470,7 +470,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         "a", "abbr", "acronym", "address", "b", "big", "br", "button",
         "caption", "cite", "code", "del", "em", "font",
         "hr", "i", "input", "img", "ins", "label", "legend", "map", "q",
-        "s", "samp", "select", "small", "span", "strike", "strong", "sub", "sup",
+        "s", "samp", "select", "option", "small", "span", "strike", "strong", "sub", "sup",
         "tt", "u", "var"];
     var tagDisallowNest = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "th", "td"];
     var tagAllowEmpty = ["th", "td"];
