@@ -88,7 +88,7 @@
         note("3: replaced conforms to new tag rules, ie inline $.htmlClean('<pre><div>hello</div></pre>', replace:[[\"pre\"], \"span\"]);");
         clean(
             "<pre><div>hello</div></pre>",
-            "<span>hello</span>",
+            "<div>hello</div>",
             {
                 replace: [[["pre"], "span"]]
             });
