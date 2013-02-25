@@ -472,9 +472,9 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         "a", "abbr", "acronym", "address", "b", "big", "br", "button",
         "caption", "cite", "code", "del", "em", "font",
         "hr", "i", "input", "img", "ins", "label", "legend", "map", "q",
-        "s", "samp", "select", "option", "small", "span", "strike", "strong", "sub", "sup",
+        "s", "samp", "select", "option", "param", "small", "span", "strike", "strong", "sub", "sup",
         "tt", "u", "var"];
-    var tagDisallowNest = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "th", "td"];
+    var tagDisallowNest = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "th", "td", "object"];
     var tagAllowEmpty = ["th", "td"];
     var tagRequiredParent = [
         null,
@@ -486,11 +486,12 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         "tr", ["table", "thead", "tbody", "tfoot"],
         "thead", ["table"],
         "tbody", ["table"],
-        "tfoot", ["table"]
+        "tfoot", ["table"],
+        "param", ["object"]
         ];
     var tagProtect = ["script", "style", "pre", "code"];
     // tags which self close e.g. <br />
-    var tagSelfClosing = ["br", "hr", "img", "link", "meta"];
+    var tagSelfClosing = ["br", "hr", "img", "link", "meta", "param"];
     // tags which do not close
     var tagNonClosing = ["!doctype", "?xml"];
     // attributes allowed on tags
@@ -522,7 +523,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             "table", ["class", "summary"],
             "th", ["class", "colspan", "rowspan"],
             "td", ["class", "colspan", "rowspan"],
-            "textarea", ["accesskey", "class", "cols", "disabled", "name", "readonly", "rows", "tabindex"]
+            "textarea", ["accesskey", "class", "cols", "disabled", "name", "readonly", "rows", "tabindex"],
+            "param", ["name", "value"],
         ];
     var tagAttributesRequired = [[], "img", ["alt"]];
     // white space chars
