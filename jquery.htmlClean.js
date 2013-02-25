@@ -69,7 +69,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
             if (tag.isClosing) {
                 // find matching container
-                if (pop(stack, [tag.name])) {
+                if (popToTagName(stack, [tag.name])) {
                     stack.pop();
                     container = stack[stack.length - 1];
                 }
@@ -135,12 +135,14 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 var add = true;
                 if (!container.isRoot) {
                     if (container.tag.isInline && !tag.isInline) {
-                        add = false;
+                        if (add = popToContainer(stack)) {
+                            container = stack[stack.length - 1];
+                        }
                     } else if (container.tag.disallowNest && tag.disallowNest
                                 && !tag.requiredParent) {
                         add = false;
                     } else if (tag.requiredParent) {
-                        if (add = pop(stack, tag.requiredParent)) {
+                        if (add = popToTagName(stack, tag.requiredParent)) {
                             container = stack[stack.length - 1];
                         }
                     }
@@ -324,12 +326,29 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     }
 
     // find a matching tag, and pop to it, if not do nothing
-    function pop(stack, tagNameArray, index) {
+    function popToTagName(stack, tagNameArray) {
+        return pop(
+            stack,
+            function (element) {
+                return $.inArray(element.tag.nameOriginal, tagNameArray) > -1
+            });
+    }
+
+    function popToContainer(stack) {
+        return pop(
+            stack,
+            function (element) {
+                return element.isRoot || !element.tag.isInline;
+            });
+    }
+
+    function pop(stack, test, index) {
         index = index || 1;
-        if ($.inArray(stack[stack.length - index].tag.nameOriginal, tagNameArray) > -1) {
+        var element = stack[stack.length - index];
+        if (test(element)) {
             return true;
-        } else if (stack.length - (index + 1) > 0
-                && pop(stack, tagNameArray, index + 1)) {
+        } else if (stack.length - index > 0
+                && pop(stack, test, index + 1)) {
             stack.pop();
             return true;
         }
