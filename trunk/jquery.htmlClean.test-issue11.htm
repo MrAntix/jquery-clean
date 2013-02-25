@@ -50,7 +50,14 @@
 
     <h2>Clean</h2>
     <script type="text/javascript">
-        note("reported: $.htmlClean('<span lang=\"EN\"><p dir=\"LTR\" align=\"LEFT\">This is a heading 1</p></span>');");
+        note("reported;");
+        clean(
+            "<span lang=\"EN\"><p dir=\"LTR\" align=\"LEFT\">This is a heading 1</p></span><font color=\"#345a8a\" size=\"5\" face=\"Calibri\"><font color=\"#345a8a\" size=\"5\" face=\"Calibri\"><font color=\"#345a8a\" size=\"5\" face=\"Calibri\"></font></font></font><font color=\"#404040\" size=\"2\" face=\"Calibri\"><font color=\"#404040\" size=\"2\" face=\"Calibri\"><font color=\"#404040\" size=\"2\" face=\"Calibri\"><p dir=\"LTR\" align=\"LEFT\">This is a heading 8</p></font></font></font><font face=\"Cambria\"><p dir=\"LTR\" align=\"LEFT\">This <b>is <i>j<u>ust</u></i></b><i><u> so</u>me</i> text.</p><p dir=\"LTR\" align=\"LEFT\">And <i>a bullet list:</i></p><i><ul><p dir=\"LTR\" align=\"LEFT\"><li>Item 1</li><p></p><p dir=\"LTR\" align=\"LEFT\"><li>Item</li></ul></i><ul><li> 2 with a </li></ul></font><ul><li><a href=\"http://smart.pr/\"><font face=\"Cambria\"><span lang=\"EN\">link</span></font></a></li><p></p></ul><font face=\"Courier New\"><span lang=\"EN\"><p dir=\"LTR\" align=\"LEFT\">And an image</p></span></font><p dir=\"LTR\" align=\"LEFT\"><font face=\"Cambria\">:</font><a href=\"http://blog.smart.pr/\"><img border=\"0\" src=\"Image3.jpg\" width=\"392\" height=\"236\"></a></p>",
+            "<p>This is a heading 1</p><p>This is a heading 8</p><p>This <strong>is <em>just</em></strong> <em>some</em> text.</p><p>And <em>a bullet list:</em></p><ul><li>Item 1</li><li>Item</li></ul><ul><li>2 with a</li></ul><ul><li><a href=\"http://smart.pr/\"><span>link</span></a></li></ul><p>And an image</p><p>:<a href=\"http://blog.smart.pr/\"><img src=\"Image3.jpg\" width=\"392\" height=\"236\" alt='' /></a></p>",
+            {
+            });
+
+        note("1. Pop the p out of the span: $.htmlClean('<span lang=\"EN\"><p dir=\"LTR\" align=\"LEFT\">This is a heading 1</p></span>');");
         clean(
             "<span lang=\"EN\"><p dir=\"LTR\" align=\"LEFT\">This is a heading 1</p></span>",
             "<p>This is a heading 1</p>",
