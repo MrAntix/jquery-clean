@@ -121,16 +121,9 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                         var byName = typeof (options.replace[repIndex][0][tagIndex]) == "string";
                         if ((byName && options.replace[repIndex][0][tagIndex] == tag.name)
                                 || (!byName && options.replace[repIndex][0][tagIndex].test(tagMatch))) {
-                            // don't render this tag
-                            tag.render = false;
-                            container.children.push(element);
-                            stack.push(element);
-                            container = element;
 
-                            // render new tag, keep attributes
-                            tag = new Tag(options.replace[repIndex][1], tagMatch[1], tagMatch[4], options);
-                            element = new Element(tag);
-                            element.attributes = container.attributes;
+                            // set the name to the replacement
+                            tag.rename(options.replace[repIndex][1]);
 
                             repIndex = options.replace.length; // break out of both loops
                             break;
@@ -241,7 +234,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     var valueQuote = m[1] || "'";
 
                     // check for classes allowed                    
-                    if (this.name == "class" && options.allowedClasses.length>0) {
+                    if (this.name == "class" && options.allowedClasses.length > 0) {
                         value =
                             $.grep(value.split(" "), function (c) {
                                 return $.grep(options.allowedClasses, function (a) {
@@ -333,7 +326,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     // find a matching tag, and pop to it, if not do nothing
     function pop(stack, tagNameArray, index) {
         index = index || 1;
-        if ($.inArray(stack[stack.length - index].tag.name, tagNameArray) > -1) {
+        if ($.inArray(stack[stack.length - index].tag.nameOriginal, tagNameArray) > -1) {
             return true;
         } else if (stack.length - (index + 1) > 0
                 && pop(stack, tagNameArray, index + 1)) {
@@ -380,45 +373,54 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     // Tag object
     function Tag(name, close, rawAttributes, options) {
         this.name = name.toLowerCase();
+        this.nameOriginal = this.name;
+        this.render = true;
 
-        this.isSelfClosing = $.inArray(this.name, tagSelfClosing) > -1;
-        this.isNonClosing = $.inArray(this.name, tagNonClosing) > -1;
-        this.isClosing = (close != undefined && close.length > 0);
+        this.init = function () {
+            this.isSelfClosing = $.inArray(this.name, tagSelfClosing) > -1;
+            this.isNonClosing = $.inArray(this.name, tagNonClosing) > -1;
+            this.isClosing = (close != undefined && close.length > 0);
 
-        this.isInline = $.inArray(this.name, tagInline) > -1;
-        this.disallowNest = $.inArray(this.name, tagDisallowNest) > -1;
-        this.requiredParent = tagRequiredParent[$.inArray(this.name, tagRequiredParent) + 1];
-        this.allowEmpty = $.inArray(this.name, tagAllowEmpty) > -1;
+            this.isInline = $.inArray(this.name, tagInline) > -1;
+            this.disallowNest = $.inArray(this.name, tagDisallowNest) > -1;
+            this.requiredParent = tagRequiredParent[$.inArray(this.name, tagRequiredParent) + 1];
+            this.allowEmpty = $.inArray(this.name, tagAllowEmpty) > -1;
 
-        this.toProtect = $.inArray(this.name, tagProtect) > -1;
+            this.toProtect = $.inArray(this.name, tagProtect) > -1;
 
-        this.rawAttributes = rawAttributes;
-        this.requiredAttributes = tagAttributesRequired[$.inArray(this.name, tagAttributesRequired) + 1];
+            this.rawAttributes = rawAttributes;
+            this.requiredAttributes = tagAttributesRequired[$.inArray(this.name, tagAttributesRequired) + 1];
 
-        if (options) {
-            if (!options.tagAttributesCache) options.tagAttributesCache = [];
-            if ($.inArray(this.name, options.tagAttributesCache) == -1) {
-                var cacheItem = tagAttributes[$.inArray(this.name, tagAttributes) + 1].slice(0);
+            if (options) {
+                if (!options.tagAttributesCache) options.tagAttributesCache = [];
+                if ($.inArray(this.name, options.tagAttributesCache) == -1) {
+                    var cacheItem = tagAttributes[$.inArray(this.name, tagAttributes) + 1].slice(0);
 
-                // add extra ones from options
-                for (var i = 0; i < options.allowedAttributes.length; i++) {
-                    var attrName = options.allowedAttributes[i][0];
-                    if ((
+                    // add extra ones from options
+                    for (var i = 0; i < options.allowedAttributes.length; i++) {
+                        var attrName = options.allowedAttributes[i][0];
+                        if ((
                             options.allowedAttributes[i].length == 1
                             || $.inArray(this.name, options.allowedAttributes[i][1]) > -1
                             ) && $.inArray(attrName, cacheItem) == -1) {
-                        cacheItem.push(attrName);
+                            cacheItem.push(attrName);
+                        }
                     }
+
+                    options.tagAttributesCache.push(this.name);
+                    options.tagAttributesCache.push(cacheItem);
                 }
 
-                options.tagAttributesCache.push(this.name);
-                options.tagAttributesCache.push(cacheItem);
+                this.allowedAttributes = options.tagAttributesCache[$.inArray(this.name, options.tagAttributesCache) + 1];
             }
-
-            this.allowedAttributes = options.tagAttributesCache[$.inArray(this.name, options.tagAttributesCache) + 1];
         }
 
-        this.render = true;
+        this.init();
+
+        this.rename = function (newName) {
+            this.name = newName;
+            this.init();
+        };
 
         return this;
     }
