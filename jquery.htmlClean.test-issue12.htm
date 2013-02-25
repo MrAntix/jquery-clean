@@ -12,34 +12,37 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script type="text/javascript" src="jquery.htmlClean.js"></script>
     <script type="text/javascript">
-            function encode(value) {
-                return value
+        function encode(value) {
+            return value
                 .replace(/\&/g, '&amp;')
                 .replace(/\</g, '&lt;')
                 .replace(/\>/g, '&gt;');
 
-            }
-            function clean(input, expected, options) {
-                document.write("<p class='input'>".concat(encode(input), "</p>"));
-                test_isEqual($.htmlClean(input, options), expected)
-            }
-            function trim(input, expected, options) {
-                document.write("<p class='input'>".concat(encode(input), "</p>"));
-                test_isEqual($.htmlClean.trim(input, options), expected)
-            }
-            function trimStart(input, expected, options) {
-                document.write("<p class='input'>".concat(encode(input), "</p>"));
-                test_isEqual($.htmlClean.trimStart(input, options), expected)
-            }
-            function trimEnd(input, expected, options) {
-                document.write("<p class='input'>".concat(encode(input), "</p>"));
-                test_isEqual($.htmlClean.trimEnd(input, options), expected)
-            }
-            function test_isEqual(actual, expected) {
-                document.write("<p class='result ".concat(
+        }
+        function clean(input, expected, options) {
+            document.write("<p class='input'>".concat(encode(input), "</p>"));
+            test_isEqual($.htmlClean(input, options), expected)
+        }
+        function trim(input, expected, options) {
+            document.write("<p class='input'>".concat(encode(input), "</p>"));
+            test_isEqual($.htmlClean.trim(input, options), expected)
+        }
+        function trimStart(input, expected, options) {
+            document.write("<p class='input'>".concat(encode(input), "</p>"));
+            test_isEqual($.htmlClean.trimStart(input, options), expected)
+        }
+        function trimEnd(input, expected, options) {
+            document.write("<p class='input'>".concat(encode(input), "</p>"));
+            test_isEqual($.htmlClean.trimEnd(input, options), expected)
+        }
+        function test_isEqual(actual, expected) {
+            document.write("<p class='result ".concat(
                 actual == expected ? "success" : "failure",
                 "'>actual&nbsp;&nbsp;: '", encode(actual), "'<br />expected: '", encode(expected), "'</p>"));
-            }
+        }
+        function note(text) {
+            document.write("<p><em>".concat(encode(text), "</em></p>"));
+        }
     </script>
 </head>
 <body>
@@ -47,9 +50,34 @@
 
     <h2>Clean</h2>
     <script type="text/javascript">
+        note("reported:");
         clean(
             "<!-- /* Font Definitions */ @font-face {font-family:\"ＭＳ 明朝\"; panose-1:0 0 0 0 0 0 0 0 0 0; mso-font-alt:\"Optima ExtraBlack\"; mso-font-charset:128; mso-generic-font-family:roman; mso-font-format:other; mso-font-pitch:fixed; mso-font-signature:1 134676480 16 0 131072 0;} @font-face {font-family:\"ＭＳ 明朝\"; panose-1:0 0 0 0 0 0 0 0 0 0; mso-font-alt:\"Optima ExtraBlack\"; mso-font-charset:128; mso-generic-font-family:roman; mso-font-format:other; mso-font-pitch:fixed; mso-font-signature:1 134676480 16 0 131072 0;} @font-face {font-family:Cambria; panose-1:2 4 5 3 5 4 6 3 2 4; mso-font-alt:\"Times New Roman\"; mso-font-charset:0; mso-generic-font-family:roman; mso-font-format:other; mso-font-pitch:auto; mso-font-signature:0 0 0 0 0 0;} /* Style Definitions */ p.MsoNormal, li.MsoNormal, div.MsoNormal {mso-style-unhide:no; mso-style-qformat:yes; mso-style-parent:\"\"; margin-top:0cm; margin-right:0cm; margin-bottom:10.0pt; margin-left:0cm; mso-pagination:widow-orphan; font-size:12.0pt; font-family:\"Cambria\",\"serif\"; mso-ascii-font-family:Cambria; mso-ascii-theme-font:minor-latin; mso-fareast-font-family:\"ＭＳ 明朝\"; mso-fareast-theme-font:minor-fareast; mso-hansi-font-family:Cambria; mso-hansi-theme-font:minor-latin; mso-bidi-font-family:\"Times New Roman\"; mso-bidi-theme-font:minor-bidi;} .MsoChpDefault {mso-style-type:export-only; mso-default-props:yes; font-family:\"Cambria\",\"serif\"; mso-ascii-font-family:Cambria; mso-ascii-theme-font:minor-latin; mso-fareast-font-family:\"ＭＳ 明朝\"; mso-fareast-theme-font:minor-fareast; mso-hansi-font-family:Cambria; mso-hansi-theme-font:minor-latin; mso-bidi-font-family:\"Times New Roman\"; mso-bidi-theme-font:minor-bidi;} .MsoPapDefault {mso-style-type:export-only; margin-bottom:10.0pt;} @page WordSection1 {size:595.0pt 842.0pt; margin:72.0pt 90.0pt 72.0pt 90.0pt; mso-header-margin:35.4pt; mso-footer-margin:35.4pt; mso-paper-source:0;} div.WordSection1 {page:WordSection1;} --> Test",
             "Test");
+
+        note("1: Allow comments");
+        clean(
+            "<!-- A Comment --> Test",
+            "Test",
+            {
+            });
+
+        note("2: Allow comments");
+        clean(
+            "<!-- A Comment --> Test",
+            "<!-- A Comment --> Test",
+            {
+                allowComments: true
+            });
+        
+        note("3: Allow comments, formatted");
+            clean(
+            "<!-- A Comment --> Test",
+            "<!-- A Comment -->\n Test",
+            {
+                allowComments: true,
+                format: true
+            });
     </script>    
 
 </body>
