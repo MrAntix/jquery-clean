@@ -21,7 +21,6 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     $.fn.htmlClean = function (options) {
         // iterate and html clean each matched element
         return this.each(function () {
-            var $this = $(this);
             if (this.value) {
                 this.value = $.htmlClean(this.value, options);
             } else {
@@ -42,7 +41,6 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         var root = new Element();
         var stack = [root];
         var container = root;
-        var protect = false;
 
         if (options.bodyOnly) {
             // check for body tag
@@ -158,6 +156,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
                     if (tag.toProtect) {
                         // skip to closing tag
+                        var tagMatch2;
                         while (tagMatch2 = tagsRE.exec(html)) {
                             var tag2 = new Tag(tagMatch2[4], tagMatch2[1], tagMatch2[5], options);
                             if (tag2.isClosing && tag2.name == tag.name) {
@@ -216,14 +215,14 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     };
 
     function applyFormat(element, options, output, indent) {
-        if (!element.tag.isInline && output.length > 0) {
+        if (element.tag.format && output.length > 0) {
             output.push("\n");
-            for (i = 0; i < indent; i++) output.push("\t");
+            for (var i = 0; i < indent; i++) output.push("\t");
         }
     }
 
     function render(element, options) {
-        var output = [], empty = element.attributes.length == 0, indent;
+        var output = [], empty = element.attributes.length == 0, indent = 0;
 
         if (element.tag.isComment) {
             if (options.allowComments) {
@@ -235,13 +234,11 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             }
         } else {
 
-            var openingTag = this.name.concat(element.tag.rawAttributes == undefined ? "" : element.tag.rawAttributes);
-
             // don't render if not in allowedTags or in removeTags
             var renderTag
-            = element.tag.render
-                && (options.allowedTags.length == 0 || $.inArray(element.tag.name, options.allowedTags) > -1)
-                && (options.removeTags.length == 0 || $.inArray(element.tag.name, options.removeTags) == -1);
+                = element.tag.render
+                    && (options.allowedTags.length == 0 || $.inArray(element.tag.name, options.allowedTags) > -1)
+                    && (options.removeTags.length == 0 || $.inArray(element.tag.name, options.removeTags) == -1);
 
             if (!element.isRoot && renderTag) {
 
@@ -290,11 +287,11 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     output.push(">");
                 }
 
-                var indent = options.formatIndent++;
+                indent = options.formatIndent++;
 
                 // render children
                 if (element.tag.toProtect) {
-                    var outputChildren = $.htmlClean.trim(element.children.join("")).replace(/<br>/ig, "\n");
+                    outputChildren = $.htmlClean.trim(element.children.join("")).replace(/<br>/ig, "\n");
                     output.push(outputChildren);
                     empty = outputChildren.length == 0;
                 } else {
@@ -350,7 +347,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         return pop(
             stack,
             function (element) {
-                return $.inArray(element.tag.nameOriginal, tagNameArray) > -1
+                return $.inArray(element.tag.nameOriginal, tagNameArray) > -1;
             });
     }
 
@@ -431,6 +428,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 this.allowEmpty = options && $.inArray(this.name, options.allowEmpty) > -1;
 
                 this.toProtect = $.inArray(this.name, tagProtect) > -1;
+
+                this.format = $.inArray(this.name, tagFormat) > -1 || !this.isInline;
             }
             this.rawAttributes = rawAttributes;
             this.requiredAttributes = tagAttributesRequired[$.inArray(this.name, tagAttributesRequired) + 1];
@@ -445,8 +444,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                         var attrName = options.allowedAttributes[i][0];
                         if ((
                             options.allowedAttributes[i].length == 1
-                            || $.inArray(this.name, options.allowedAttributes[i][1]) > -1
-                            ) && $.inArray(attrName, cacheItem) == -1) {
+                                || $.inArray(this.name, options.allowedAttributes[i][1]) > -1
+                        ) && $.inArray(attrName, cacheItem) == -1) {
                             cacheItem.push(attrName);
                         }
                     }
@@ -457,7 +456,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
                 this.allowedAttributes = options.tagAttributesCache[$.inArray(this.name, options.tagAttributesCache) + 1];
             }
-        }
+        };
 
         this.init();
 
@@ -470,13 +469,17 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     }
 
     function startsWithWhitespace(item) {
-        while (isElement(item) && item.children.length > 0) { item = item.children[0] }
+        while (isElement(item) && item.children.length > 0) {
+            item = item.children[0];
+        }
         if (!isText(item)) return false;
         var text = textClean(item);
         return text.length > 0 && $.htmlClean.isWhitespace(text.charAt(0));
     }
     function endsWithWhitespace(item) {
-        while (isElement(item) && item.children.length > 0) { item = item.children[item.children.length - 1] }
+        while (isElement(item) && item.children.length > 0) {
+            item = item.children[item.children.length - 1];
+        }
         if (!isText(item)) return false;
         var text = textClean(item);
         return text.length > 0 && $.htmlClean.isWhitespace(text.charAt(text.length - 1));
@@ -518,6 +521,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         "hr", "i", "input", "img", "ins", "label", "legend", "map", "q",
         "s", "samp", "select", "option", "param", "small", "span", "strike", "strong", "sub", "sup",
         "tt", "u", "var"];
+    var tagFormat = ["address", "button", "caption", "code", "input", "label", "legend", "select", "option", "param"];
     var tagDisallowNest = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "th", "td", "object"];
     var tagAllowEmpty = ["th", "td"];
     var tagRequiredParent = [
