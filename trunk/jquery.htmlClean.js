@@ -158,7 +158,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     if (tag.toProtect) {
                         // skip to closing tag
                         while (tagMatch2 = tagsRE.exec(html)) {
-                            var tag2 = new Tag(tagMatch2[3], tagMatch2[1], tagMatch2[4], options);
+                            var tag2 = new Tag(tagMatch2[4], tagMatch2[1], tagMatch2[5], options);
                             if (tag2.isClosing && tag2.name == tag.name) {
                                 element.children.push(RegExp.leftContext.substring(lastIndex));
                                 lastIndex = tagsRE.lastIndex;
