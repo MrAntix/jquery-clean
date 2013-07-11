@@ -1,6 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{630FB7FC-1598-40D8-B59F-4C3EA41463B6}"
+	ProjectSection(SolutionItems) = preProject
+		jquery.htmlClean.test-issue10.htm = jquery.htmlClean.test-issue10.htm
+		jquery.htmlClean.test-issue11.htm = jquery.htmlClean.test-issue11.htm
+		jquery.htmlClean.test-issue12.htm = jquery.htmlClean.test-issue12.htm
+		jquery.htmlClean.test-issue14.htm = jquery.htmlClean.test-issue14.htm
+		jquery.htmlClean.test-issue15.htm = jquery.htmlClean.test-issue15.htm
+		jquery.htmlClean.test-issue16.htm = jquery.htmlClean.test-issue16.htm
+		jquery.htmlClean.test-issue18.htm = jquery.htmlClean.test-issue18.htm
+		jquery.htmlClean.test-issue19.htm = jquery.htmlClean.test-issue19.htm
+		jquery.htmlClean.test-issue22.htm = jquery.htmlClean.test-issue22.htm
+		jquery.htmlClean.test-issue25.htm = jquery.htmlClean.test-issue25.htm
+		jquery.htmlClean.test-issue27.htm = jquery.htmlClean.test-issue27.htm
+		jquery.htmlClean.test-issue29.htm = jquery.htmlClean.test-issue29.htm
+		jquery.htmlClean.test-issue30.htm = jquery.htmlClean.test-issue30.htm
+		jquery.htmlClean.test-issue9.htm = jquery.htmlClean.test-issue9.htm
+		jquery.htmlClean.test.htm = jquery.htmlClean.test.htm
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
