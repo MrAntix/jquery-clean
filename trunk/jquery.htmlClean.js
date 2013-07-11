@@ -416,6 +416,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             if (this.name == "--") {
                 this.isComment = true;
                 this.isSelfClosing = true;
+                this.format = true;
             } else {
                 this.isComment = false;
                 this.isSelfClosing = $.inArray(this.name, tagSelfClosing) > -1;
