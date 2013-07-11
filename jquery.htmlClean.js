@@ -33,6 +33,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     // clean the passed html
     $.htmlClean = function (html, options) {
         options = $.extend({}, $.htmlClean.defaults, options);
+        options.allowEmpty = tagAllowEmpty.concat(options.allowEmpty);
 
         var tagsRE = /(<(\/)?(\w+:)?([\w]+)([^>]*)>)|<!--(.*?--)>/gi;
         var attrsRE = /([\w\-]+)\s*=\s*(".*?"|'.*?'|[^\s>\/]*)/gi;
@@ -210,7 +211,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             [/vertical-align:\s*super/i, "sup"],
             [/vertical-align:\s*sub/i, "sub"]
         ],
-        allowComments: false
+        allowComments: false,
+        allowEmpty: []
     };
 
     function applyFormat(element, options, output, indent) {
@@ -426,7 +428,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 this.isInline = $.inArray(this.name, tagInline) > -1;
                 this.disallowNest = $.inArray(this.name, tagDisallowNest) > -1;
                 this.requiredParent = tagRequiredParent[$.inArray(this.name, tagRequiredParent) + 1];
-                this.allowEmpty = $.inArray(this.name, tagAllowEmpty) > -1;
+                this.allowEmpty = options && $.inArray(this.name, options.allowEmpty) > -1;
 
                 this.toProtect = $.inArray(this.name, tagProtect) > -1;
             }
