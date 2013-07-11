@@ -50,12 +50,12 @@
 
     <h2>Clean</h2>
     <script type="text/javascript">
-        note("reported: $.htmlClean('<p>Some Text</p><p>&nbsp;</p><p>Other Text</p>');");
+        note("reported: $.htmlClean('<iframe src=\"http://example.com\" />');");
         clean(
-            "<p>Some Text</p><p>&nbsp;</p><p>Other Text</p>",
-            "<p>Some Text</p><p></p><p>Other Text</p>",
-            {
-                allowEmpty: ["p"]
+            "<iframe src=\"http://example.com\" />",
+            "<iframe src=\"http://example.com\"></iframe>",
+            {                
+                removeTags: ["basefont", "center", "dir", "font", "frame", "frameset", "isindex", "menu", "noframes", "s", "strike", "u"]
             });
 
     </script>
