@@ -3,7 +3,7 @@ HTML Clean for jQuery
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.3.1
+version 1.4.0
 
 $Revision$
 
