@@ -3,7 +3,7 @@ HTML Clean for jQuery
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.4.0
+version 1.4.1
 
 $Revision$
 
@@ -16,6 +16,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 2012-04-30 allowedAttributes added, an array of attributed allowed on the elements
 2013-02-25 now will push non-inline elements up the stack if nested in an inline element
 2013-02-25 comment element support added, removed by default, see AllowComments in options
+2013-08-22 removeTagsAndContent added, an array of tag names to do just that
 */
 (function ($) {
     $.fn.htmlClean = function (options) {
@@ -188,6 +189,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         allowedTags: [],
         // remove tags in this array, (black list), contents still rendered
         removeTags: ["basefont", "center", "dir", "font", "frame", "frameset", "iframe", "isindex", "menu", "noframes", "s", "strike", "u"],
+        // remove tags and content
+        removeTagsAndContent: [],
         // array of [attributeName], [optional array of allowed on elements] e.g. [["id"], ["style", ["p", "dl"]]] // allow all elements to have id and allow style on 'p' and 'dl'
         allowedAttributes: [],
         // array of attribute names to remove on all elements in addition to those not in tagAttributes e.g ["width", "height"]
@@ -235,8 +238,10 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         } else {
 
             // don't render if not in allowedTags or in removeTags
+            var renderChildren 
+                = (options.removeTagsAndContent.length == 0 || $.inArray(element.tag.name, options.removeTagsAndContent) == -1);
             var renderTag
-                = element.tag.render
+                = renderChildren && element.tag.render
                     && (options.allowedTags.length == 0 || $.inArray(element.tag.name, options.allowedTags) > -1)
                     && (options.removeTags.length == 0 || $.inArray(element.tag.name, options.removeTags) == -1);
 
@@ -281,7 +286,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 empty = false;
             } else if (element.tag.isNonClosing) {
                 empty = false;
-            } else {
+            } else if (renderChildren) {
                 if (!element.isRoot && renderTag) {
                     // close
                     output.push(">");
