@@ -108,6 +108,11 @@
         clean("<P>Add alt attr to<img /></p>", "<p>Add alt attr to<img alt='' /></p>");
         clean("<P>This is<i> inline </i><b>consecutive</b> </p>", "<p>This is <em>inline</em> <strong>consecutive</strong></p>");
         clean("<P>This is <em>an inline </em> tag<BR>test<br></p>", "<p>This is <em>an inline</em> tag<br />test</p>");
+
+        $.htmlClean.defaults.allowBreakAsLastChild = true;
+        clean("<P>This is a break as last child allowed test</p><div><br></div>", "<p>This is a break as last child allowed test</p><div><br /></div>");
+        $.htmlClean.defaults.allowBreakAsLastChild = false;
+
         clean("<P>This is <em> inline<b>  nested</b> </em> test</p>", "<p>This is <em>inline <strong>nested</strong></em> test</p>");
         clean("<P>This is <em>inline<b>nested</b> </em>test</p>", "<p>This is <em>inline<strong>nested</strong></em> test</p>");
         clean("<P>This is <i>inline split<b>nested </i>te</b>st</p>", "<p>This is <em>inline split<strong>nested</strong></em> test</p>");
