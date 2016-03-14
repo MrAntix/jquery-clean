@@ -1,0 +1,11 @@
+{
+  "name": "jquery-htmlclean",
+  "author": "Anthony Johnston",
+  "version": "1.2.0",
+  "devDependencies": {
+    "jshint": "~2.6"
+  },
+  "scripts": {
+    "test": "./node_modules/jshint/bin/jshint jquery.htmlClean.js"
+  }
+}
