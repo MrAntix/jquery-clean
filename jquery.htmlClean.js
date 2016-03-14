@@ -17,6 +17,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 2013-02-25 now will push non-inline elements up the stack if nested in an inline element
 2013-02-25 comment element support added, removed by default, see AllowComments in options
 2013-08-22 removeTagsAndContent added, an array of tag names to do just that
+2016-03-11 allowBreakAsLastChild added, 
 */
 (function ($) {
     $.fn.htmlClean = function (options) {
@@ -214,7 +215,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             [/vertical-align:\s*sub/i, "sub"]
         ],
         allowComments: false,
-        allowEmpty: []
+        allowEmpty: [],
+        allowBreakAsLastChild: false
     };
 
     function applyFormat(element, options, output, indent) {
@@ -238,7 +240,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         } else {
 
             // don't render if not in allowedTags or in removeTags
-            var renderChildren 
+            var renderChildren
                 = (options.removeTagsAndContent.length == 0 || $.inArray(element.tag.name, options.removeTagsAndContent) == -1);
             var renderTag
                 = renderChildren && element.tag.render
@@ -315,8 +317,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                                 outputChildren.push(text);
                             }
                         } else {
-                            // don't allow a break to be the last child
-                            if (i != element.children.length - 1 || child.tag.name != "br") {
+                            // only allow break as last child if allowBreakAsLastChild option is set
+                            if (i !== element.children.length - 1 || child.tag.name !== "br" || (options.allowBreakAsLastChild && child.tag.name === "br")) {
                                 if (options.format) applyFormat(child, options, outputChildren, indent);
                                 outputChildren = outputChildren.concat(render(child, options));
                             }
@@ -507,14 +509,14 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         return text.substring($.htmlClean.trimStartIndex(text));
     };
     $.htmlClean.trimStartIndex = function (text) {
-        for (var start = 0; start < text.length - 1 && $.htmlClean.isWhitespace(text.charAt(start)); start++);
+        for (var start = 0; start < text.length - 1 && $.htmlClean.isWhitespace(text.charAt(start)) ; start++);
         return start;
     };
     $.htmlClean.trimEnd = function (text) {
         return text.substring(0, $.htmlClean.trimEndIndex(text));
     };
     $.htmlClean.trimEndIndex = function (text) {
-        for (var end = text.length - 1; end >= 0 && $.htmlClean.isWhitespace(text.charAt(end)); end--);
+        for (var end = text.length - 1; end >= 0 && $.htmlClean.isWhitespace(text.charAt(end)) ; end--);
         return end + 1;
     };
     // checks a char is white space or not
@@ -542,7 +544,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         "tbody", ["table"],
         "tfoot", ["table"],
         "param", ["object"]
-        ];
+    ];
     var tagProtect = ["script", "style", "pre", "code"];
     // tags which self close e.g. <br />
     var tagSelfClosing = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"];
@@ -581,7 +583,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
             "textarea", ["accesskey", "class", "cols", "disabled", "name", "readonly", "rows", "tabindex"],
             "param", ["name", "value"],
             "embed", ["height", "src", "type", "width"]
-        ];
+    ];
     var tagAttributesRequired = [[], "img", ["alt"]];
     // white space chars
     var whitespace = [" ", " ", "\t", "\n", "\r", "\f"];
