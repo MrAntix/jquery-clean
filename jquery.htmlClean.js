@@ -46,24 +46,24 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
         if (options.bodyOnly) {
             // check for body tag
-            if (tagMatch = /<body[^>]*>((\n|.)*)<\/body>/i.exec(html)) {
+            if ((tagMatch = /<body[^>]*>((\n|.)*)<\/body>/i.exec(html)) !== null) {
                 html = tagMatch[1];
             }
         }
         html = html.concat("<xxx>"); // ensure last element/text is found
         var lastIndex;
 
-        while (tagMatch = tagsRE.exec(html)) {
-            var tag = tagMatch[6]
-                ? new Tag("--", null, tagMatch[6], options)
-                : new Tag(tagMatch[4], tagMatch[2], tagMatch[5], options);
+        while ((tagMatch = tagsRE.exec(html)) !== null) {
+          var tag = tagMatch[6] ?
+            new Tag("--", null, tagMatch[6], options) :
+            new Tag(tagMatch[4], tagMatch[2], tagMatch[5], options);
 
             // add the text
             var text = html.substring(lastIndex, tagMatch.index);
             if (text.length > 0) {
                 var child = container.children[container.children.length - 1];
-                if (container.children.length > 0
-                        && isText(child = container.children[container.children.length - 1])) {
+                if (container.children.length > 0 &&
+                  isText(child = container.children[container.children.length - 1])) {
                     // merge text
                     container.children[container.children.length - 1] = child.concat(text);
                 } else {
@@ -84,11 +84,11 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
                 // add attributes
                 var attrMatch;
-                while (attrMatch = attrsRE.exec(tag.rawAttributes)) {
+                while ((attrMatch = attrsRE.exec(tag.rawAttributes)) !== null) {
 
                     // check style attribute and do replacements
-                    if (attrMatch[1].toLowerCase() == "style"
-                        && options.replaceStyles) {
+                  if (attrMatch[1].toLowerCase() == "style" &&
+                    options.replaceStyles) {
 
                         var renderParent = !tag.isInline;
                         for (var i = 0; i < options.replaceStyles.length; i++) {
@@ -108,24 +108,25 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                         }
                     }
 
-                    if (tag.allowedAttributes != null
-                            && (tag.allowedAttributes.length == 0
-                            || $.inArray(attrMatch[1], tag.allowedAttributes) > -1)) {
+                    if (tag.allowedAttributes !== null &&
+                      (tag.allowedAttributes.length === 0 ||
+                      $.inArray(attrMatch[1], tag.allowedAttributes) > -1)) {
                         element.attributes.push(new Attribute(attrMatch[1], attrMatch[2]));
                     }
                 }
                 // add required empty ones
-                $.each(tag.requiredAttributes, function () {
-                    var name = this.toString();
-                    if (!element.hasAttribute(name)) element.attributes.push(new Attribute(name, ""));
-                });
+                for (var ai = 0; ai < tag.requiredAttributes.length; ai++) {
+                    var name = tag.requiredAttributes[ai];
+                    if (!element.hasAttribute(name))
+                        element.attributes.push(new Attribute(name, ""));
+                }
 
                 // check for replacements
                 for (var repIndex = 0; repIndex < options.replace.length; repIndex++) {
                     for (var tagIndex = 0; tagIndex < options.replace[repIndex][0].length; tagIndex++) {
                         var byName = typeof (options.replace[repIndex][0][tagIndex]) == "string";
-                        if ((byName && options.replace[repIndex][0][tagIndex] == tag.name)
-                                || (!byName && options.replace[repIndex][0][tagIndex].test(tagMatch))) {
+                        if ((byName && options.replace[repIndex][0][tagIndex] == tag.name) ||
+                          (!byName && options.replace[repIndex][0][tagIndex].test(tagMatch))) {
 
                             // set the name to the replacement
                             tag.rename(options.replace[repIndex][1]);
@@ -140,14 +141,15 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 var add = true;
                 if (!container.isRoot) {
                     if (container.tag.isInline && !tag.isInline) {
-                        if (add = popToContainer(stack)) {
+                        if ((add = popToContainer(stack))) {
                             container = stack[stack.length - 1];
                         }
-                    } else if (container.tag.disallowNest && tag.disallowNest
-                                && !tag.requiredParent) {
+                    } else if (container.tag.disallowNest &&
+                      tag.disallowNest &&
+                      !tag.requiredParent) {
                         add = false;
                     } else if (tag.requiredParent) {
-                        if (add = popToTagName(stack, tag.requiredParent)) {
+                        if ((add = popToTagName(stack, tag.requiredParent))) {
                             container = stack[stack.length - 1];
                         }
                     }
@@ -159,7 +161,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     if (tag.toProtect) {
                         // skip to closing tag
                         var tagMatch2;
-                        while (tagMatch2 = tagsRE.exec(html)) {
+                        while ((tagMatch2 = tagsRE.exec(html)) !== null) {
                             var tag2 = new Tag(tagMatch2[4], tagMatch2[1], tagMatch2[5], options);
                             if (tag2.isClosing && tag2.name == tag.name) {
                                 element.children.push(RegExp.leftContext.substring(lastIndex));
@@ -227,7 +229,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
     }
 
     function render(element, options) {
-        var output = [], empty = element.attributes.length == 0, indent = 0;
+        var output = [], empty = element.attributes.length === 0, indent = 0;
 
         if (element.tag.isComment) {
             if (options.allowComments) {
@@ -241,11 +243,11 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 
             // don't render if not in allowedTags or in removeTags
             var renderChildren
-                = (options.removeTagsAndContent.length == 0 || $.inArray(element.tag.name, options.removeTagsAndContent) == -1);
+                = (options.removeTagsAndContent.length === 0 || $.inArray(element.tag.name, options.removeTagsAndContent) == -1);
             var renderTag
-                = renderChildren && element.tag.render
-                    && (options.allowedTags.length == 0 || $.inArray(element.tag.name, options.allowedTags) > -1)
-                    && (options.removeTags.length == 0 || $.inArray(element.tag.name, options.removeTags) == -1);
+                = renderChildren && element.tag.render &&
+                (options.allowedTags.length === 0 || $.inArray(element.tag.name, options.allowedTags) > -1) &&
+                (options.removeTags.length === 0 || $.inArray(element.tag.name, options.removeTags) == -1);
 
             if (!element.isRoot && renderTag) {
 
@@ -263,14 +265,15 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                             value =
                             $.grep(value.split(" "), function (c) {
                                 return $.grep(options.allowedClasses, function (a) {
-                                    return a == c
-                                        || (a[0] == c && (a.length == 1 || $.inArray(element.tag.name, a[1]) > -1));
+                                  return a == c ||
+                                    (a[0] == c && (a.length == 1 || $.inArray(element.tag.name, a[1]) > -1));
                                 }).length > 0;
                             })
                             .join(" ");
                         }
 
-                        if (value != null && (value.length > 0 || $.inArray(this.name, element.tag.requiredAttributes) > -1)) {
+                        if (value !== null &&
+                          (value.length > 0 || $.inArray(this.name, element.tag.requiredAttributes) > -1)) {
                             output.push(" ");
                             output.push(this.name);
                             output.push("=");
@@ -295,20 +298,21 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 }
 
                 indent = options.formatIndent++;
+                var outputChildren = [];
 
                 // render children
                 if (element.tag.toProtect) {
                     outputChildren = $.htmlClean.trim(element.children.join("")).replace(/<br>/ig, "\n");
                     output.push(outputChildren);
-                    empty = outputChildren.length == 0;
+                    empty = outputChildren.length === 0;
                 } else {
-                    var outputChildren = [];
+                    outputChildren = [];
                     for (var i = 0; i < element.children.length; i++) {
                         var child = element.children[i];
                         var text = $.htmlClean.trim(textClean(isText(child) ? child : child.childrenToString()));
                         if (isInline(child)) {
-                            if (i > 0 && text.length > 0
-                        && (startsWithWhitespace(child) || endsWithWhitespace(element.children[i - 1]))) {
+                          if (i > 0 && text.length > 0 &&
+                            (startsWithWhitespace(child) || endsWithWhitespace(element.children[i - 1]))) {
                                 outputChildren.push(" ");
                             }
                         }
@@ -371,8 +375,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
         var element = stack[stack.length - index];
         if (test(element)) {
             return true;
-        } else if (stack.length - index > 0
-                && pop(stack, test, index + 1)) {
+        } else if (stack.length - index > 0 &&
+          pop(stack, test, index + 1)) {
             stack.pop();
             return true;
         }
@@ -428,7 +432,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                 this.isComment = false;
                 this.isSelfClosing = $.inArray(this.name, tagSelfClosing) > -1;
                 this.isNonClosing = $.inArray(this.name, tagNonClosing) > -1;
-                this.isClosing = (close != undefined && close.length > 0);
+                this.isClosing = (close !== undefined && close.length > 0);
 
                 this.isInline = $.inArray(this.name, tagInline) > -1;
                 this.disallowNest = $.inArray(this.name, tagDisallowNest) > -1;
@@ -451,8 +455,8 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
                     for (var i = 0; i < options.allowedAttributes.length; i++) {
                         var attrName = options.allowedAttributes[i][0];
                         if ((
-                            options.allowedAttributes[i].length == 1
-                                || $.inArray(this.name, options.allowedAttributes[i][1]) > -1
+                            options.allowedAttributes[i].length == 1 ||
+                          $.inArray(this.name, options.allowedAttributes[i][1]) > -1
                         ) && $.inArray(attrName, cacheItem) == -1) {
                             cacheItem.push(attrName);
                         }
