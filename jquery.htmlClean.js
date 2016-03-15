@@ -1,9 +1,9 @@
-/*
+﻿/*
 HTML Clean for jQuery   
 Anthony Johnston
 http://www.antix.co.uk    
     
-version 1.4.1
+version 1.4.2
 
 $Revision$
 
@@ -18,6 +18,7 @@ Use and distibution http://www.opensource.org/licenses/bsd-license.php
 2013-02-25 comment element support added, removed by default, see AllowComments in options
 2013-08-22 removeTagsAndContent added, an array of tag names to do just that
 2016-03-11 allowBreakAsLastChild added, 
+2016-03-15 jshint recommendations, no functional changes
 */
 (function ($) {
     $.fn.htmlClean = function (options) {
