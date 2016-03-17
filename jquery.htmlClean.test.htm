@@ -49,58 +49,7 @@
     
     <h2>Clean</h2>
     <script type="text/javascript">
-
-        clean(
-            "<p>contains&nbsp;<a>in</a>&nbsp;text</p>",
-            "<p>contains&nbsp;<a>in</a>&nbsp;text</p>");
-
-        clean(
-            "<div data-image=\"hello\">hiya</div>",
-            "<div data-image=\"hello\">hiya</div>",
-            {
-                allowedAttributes: [["data-image"]]
-            });
-
-        clean(
-            "<div id='Utter' frog='chicken'>allows new attribute</div>",
-            "<div id='Utter'>allows new attribute</div>",
-            {
-                allowedAttributes: [["id"]]
-            });
-
-        clean(
-            "<div id='Utter' frog='chicken'><span id='Sau'>allows new attribute on specific tag</span></div>",
-            "<div><span id='Sau'>allows new attribute on specific tag</span></div>",
-            {
-                allowedAttributes: [
-                    ["id", ["span"]]
-                ]
-            });
-
-        clean(
-            "<div id='Utter' class='bird' frog='chicken'>retains old attributes allowed</div>",
-            "<div id='Utter' class='bird'>retains old attributes allowed</div>",
-            {
-                allowedAttributes: [["id"]],
-                allowedClasses: [["bird"]]
-            });
-
-    	clean("<p align='center'><font>hello</font><p>","<p>hello</p>");
-    	
-        clean("<table><tbody><tr><td colspan=2>check colspan</td></tr></tbody></table>", "<table><tbody><tr><td colspan='2'>check colspan</td></tr></tbody></table>");
-
-        $.htmlClean.defaults.allowedTags = ["p", "em"];
-        clean("<p>testing <i>allowedTags</i> <strong>option</strong> <em>(white list)</em></p>", "<p>testing <em>allowedTags</em> option <em>(white list)</em></p>");
-        $.htmlClean.defaults.allowedTags = [];
-
-        $.htmlClean.defaults.removeTags = ["strong"];
-        clean("<p>testing <i>removeTags</i> <b>option</b> <em>(black list)</em></p>", "<p>testing <em>removeTags</em> option <em>(black list)</em></p>");
-        $.htmlClean.defaults.removeTags = [];
-
-        $.htmlClean.defaults.removeTagsAndContent = ["strong"];
-        clean("<p>testing <i>removeTags</i> <b>option</b> <em>(black list)</em></p>", "<p>testing <em>removeTags</em>  <em>(black list)</em></p>");
-        $.htmlClean.defaults.removeTagsAndContent = [];
-
+ 
         clean("<p class='test test2'>Allow test css class on a paragraph, <strong class='test'>not on a strong</strong></p>", "<p class='test'>Allow test css class on a paragraph, <strong>not on a strong</strong></p>");
         clean("<P>Allow blank alt attr on<img alt='' src='' /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");
         clean("<P>Allow blank alt attr on<img alt= /></p>", "<p>Allow blank alt attr on<img alt='' /></p>");

@@ -1,13 +1,4 @@
-describe('main tests', function() {
-
-  it('cleans &nbsp;', function() {
-
-    var result = $.htmlClean(
-      '<p>contains&nbsp;<a>in</a>&nbsp;text</p>');
-
-    expect(result)
-      .toBe('<p>contains <a>in</a> text</p>');
-  });
+describe('clean attributes tests', function() {
 
   it('allow attributes', function() {
 
@@ -46,4 +37,25 @@ describe('main tests', function() {
     expect(result)
       .toBe('<div><span id="Sau">allows new attribute on specific tag</span></div>');
   });
+
+  it('removes attributes', function() {
+
+    var result = $.htmlClean(
+      '<p align="center">hello<p>'
+      );
+
+    expect(result)
+      .toBe('<p>hello</p>');
+  });
+
+  it('quotes attributes', function() {
+
+    var result = $.htmlClean(
+      '<table><tbody><tr><td colspan=2>check colspan</td></tr></tbody></table>'
+      );
+
+    expect(result)
+      .toBe('<table><tbody><tr><td colspan=\'2\'>check colspan</td></tr></tbody></table>');
+  });
+
 });
