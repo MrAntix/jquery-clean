@@ -1,7 +1,7 @@
 {
   "name": "jquery-htmlclean",
   "author": "Anthony Johnston",
-  "version": "1.2.0",
+  "version": "1.4.2",
   "devDependencies": {
     "install": "^0.6.0",
     "jasmine-core": "^2.4.1",
